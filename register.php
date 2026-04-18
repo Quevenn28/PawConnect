@@ -42,9 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_name'] = $full_name;
             $_SESSION['username']  = $username;
 
-            header("Location: dashboard.php?welcome=1");
-            
-            exit;
+            $success = true;
         }
     }
 }
@@ -56,8 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register — PawConnect</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
+
 <nav class="navbar">
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
   <div class="nav-links">
@@ -131,6 +132,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
   </div>
 </div>
+<?php if (!empty($success)): ?>
+<script>
+Swal.fire({
+  title: "Success",
+  text: "Your account has been created successfully!",
+  icon: "success",
+  draggable: true
+}).then(() => {
+  window.location.href = "dashboard.php?welcome=1";
+});
+</script>
+<?php endif; ?>
 
 </body>
 </html>

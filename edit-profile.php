@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profile — PawConnect</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <nav class="navbar">
@@ -87,6 +88,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
   </div>
 </div>
+
+<?php if (!empty($success)): ?>
+<script>
+Swal.fire({
+  title: "Success",
+  text: "Your account has been updated successfully!",
+  icon: "success",
+  draggable: true
+}).then(() => {
+  window.location.href = "dashboard.php?welcome=1";
+});
+</script>
+<?php endif; ?>
 
 </body>
 </html>

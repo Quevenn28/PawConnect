@@ -13,6 +13,12 @@ $recent_pets = $stmt->fetchAll();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script
+  src="https://www.tuqlas.com/chatbot.js"
+  data-key="tq_live_a9917a05459b29796ff98c8c8b5c0576a7eafbe0"
+  data-api="https://www.tuqlas.com"
+  defer
+></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PawConnect — Find Your Forever Pet</title>
@@ -155,3 +161,4 @@ $recent_pets = $stmt->fetchAll();
 
 </body>
 </html>
+

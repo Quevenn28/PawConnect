@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="navbar">
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
   <div class="nav-links">
-    <a href="login.php">Already a member? Login →</a>
+    <a href="index.php">Return to Home</a>
   </div>
 </nav>
 
@@ -112,15 +112,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="form-section">Contact Info <span style="font-weight:400;color:#9ca3af;font-size:11px">(at least one required)</span></div>
 
       <div class="form-group">
-        <label>📞 Phone / Mobile Number</label>
+        <label>Phone / Mobile Number</label>
         <input type="tel" name="phone" placeholder="+63 9XX XXX XXXX" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
       </div>
       <div class="form-group">
-        <label>📘 Facebook Profile URL</label>
+        <label>Facebook Messenger Profile URL</label>
         <input type="url" name="facebook" placeholder="https://facebook.com/yourname" value="<?= htmlspecialchars($_POST['facebook'] ?? '') ?>">
       </div>
       <div class="form-group">
-        <label>📍 Address / Location</label>
+        <label>Address / Location</label>
         <input type="text" name="address" placeholder="City, Province" value="<?= htmlspecialchars($_POST['address'] ?? '') ?>">
       </div>
 

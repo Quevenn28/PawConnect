@@ -124,7 +124,7 @@ $emoji = $pet['species']==='Dog'?'🐕':($pet['species']==='Cat'?'🐈':($pet['s
       <!-- Adopt section -->
       <?php if (is_logged_in() && $_SESSION['user_id'] != $pet['user_id']): ?>
         <?php if ($already_requested): ?>
-          <div class="alert alert-info">✓ You already sent an adoption request for <?= htmlspecialchars($pet['name']) ?>.</div>
+          <div class="alert alert-info">You already sent an adoption request for <?= htmlspecialchars($pet['name']) ?>.</div>
         <?php else: ?>
         <div class="adopt-form">
           <h3>🐾 Request Adoption</h3>

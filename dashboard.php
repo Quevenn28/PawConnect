@@ -78,13 +78,13 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — PawConnect</title>
   <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <nav class="navbar">
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
   <div class="nav-links">
     <a href="pets.php">Browse Pets</a>
-    <a href="add-pet.php" class="btn btn-primary btn-sm">+ Add Pet</a>
     <a href="logout.php" class="btn btn-gray btn-sm">Logout</a>
   </div>
 </nav>
@@ -108,7 +108,11 @@ try {
     <!-- Left: Profile -->
     <div>
       <div class="profile-card">
-        <div class="profile-avatar"><?= strtoupper(substr($user['full_name'],0,1)) ?></div>
+        <?php if (!empty($user['profile_photo'])): ?>
+          <div class="profile-avatar"><img src="uploads/users/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Profile photo"></div>
+        <?php else: ?>
+          <div class="profile-avatar"><?= strtoupper(substr($user['full_name'],0,1)) ?></div>
+        <?php endif; ?>
         <h3><?= htmlspecialchars($user['full_name']) ?></h3>
         <p>@<?= htmlspecialchars($user['username']) ?></p>
 
@@ -166,7 +170,6 @@ try {
       <div class="panel">
         <div class="panel-header">
           <h2>🐾 My Pet Listings</h2>
-          <a href="add-pet.php" class="btn btn-primary btn-sm">+ Add</a>
         </div>
         <?php if (!$my_pets): ?>
           <div class="empty-state">
@@ -193,12 +196,12 @@ try {
               <?php if ($pet['status'] === 'available'): ?>
               <div class="my-pet-actions">
                 <a href="pet.php?id=<?= $pet['id'] ?>" class="btn btn-outline btn-sm">View</a>
-                <form method="POST" action="mark-adopted.php" onsubmit="return confirm('Mark <?= htmlspecialchars($pet['name']) ?> as adopted?')">
+                <form method="POST" action="mark-adopted.php" class="mark-adopted-form" data-pet-name="<?= htmlspecialchars($pet['name']) ?>">
                   <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                   <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                  <button class="btn btn-green btn-sm">✓ Adopted</button>
+                  <button type="submit" class="btn btn-green btn-sm">✓ Adopted</button>
                 </form>
-                <form method="POST" action="delete-pet.php" onsubmit="return confirm('Delete this listing?')">
+                <form method="POST" action="delete-pet.php" class="delete-pet-form" data-pet-name="<?= htmlspecialchars($pet['name']) ?>">
                   <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                   <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
                   <button class="btn btn-red btn-sm">Delete</button>
@@ -246,7 +249,7 @@ try {
       <!-- Adoption History -->
       <?php if ($adopted_hist): ?>
       <div class="panel">
-        <div class="panel-header"><h2>🏠 Pets I Rehomed</h2></div>
+        <div class="panel-header"><h2>🏠 Pets Rehomed</h2></div>
         <?php foreach ($adopted_hist as $a): ?>
         <div class="my-request-row">
           <div class="req-thumb">🐾</div>
@@ -264,5 +267,48 @@ try {
   </div><!-- /dash-grid -->
 </div>
 
+<script>
+  document.querySelectorAll('.mark-adopted-form').forEach(function(form) {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      var petName = this.dataset.petName || 'this pet';
+      Swal.fire({
+        title: 'Mark adopted?',
+        text: 'Mark ' + petName + ' as adopted? This cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, mark adopted',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+      }).then(function(result) {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('.delete-pet-form').forEach(function(form) {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      var petName = this.dataset.petName || 'this listing';
+      Swal.fire({
+        title: 'Delete pet listing?',
+        text: 'Are you sure you want to delete ' + petName + '? This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+      }).then(function(result) {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

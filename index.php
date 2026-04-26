@@ -72,7 +72,7 @@ $recent_pets = $stmt->fetchAll();
 <div class="section" style="background: white; border-bottom: 1px solid #e5e7eb;">
   <div class="container">
     <h2 class="section-title">How PawConnect Works</h2>
-    <p class="section-sub">Simple steps to find or rehome a pet</p>
+    <p class="section-sub">Easy as few steps, you can rehome a pet of your dreams.</p>
     <div class="how-grid">
       <div class="how-card">
         <span class="how-icon">📝</span>
@@ -90,7 +90,7 @@ $recent_pets = $stmt->fetchAll();
         <span class="how-icon">💬</span>
         <div class="how-num">3</div>
         <h3>Connect</h3>
-        <p>Contact the owner directly via phone, email, or Facebook.</p>
+        <p>Contact the owner directly via phone, email, or Facebook. There, negotiations will begin.</p>
       </div>
       <div class="how-card">
         <span class="how-icon">🏠</span>

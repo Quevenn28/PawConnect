@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="navbar">
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
   <div class="nav-links">
-    <a href="index.php">← Home</a>
+    <a href="index.php">Return to Home</a>
   </div>
 </nav>
 
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="password" placeholder="Your password" required>
       </div>
 
-      <button type="submit" class="btn btn-primary w-full">Sign In →</button>
+      <button type="submit" class="btn btn-primary w-full">Sign In</button>
 
       <div class="form-footer">
         No account yet? <a href="register.php">Create one free</a>

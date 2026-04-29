@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <nav class="navbar">
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
-  <div class="nav-links"><a href="dashboard.php">← Dashboard</a></div>
+  <div class="nav-links"><a href="dashboard.php">Return to Dashboard</a></div>
 </nav>
 
 <div class="form-page">
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="form-logo">
       <div class="paw">🐾</div>
       <h1>List a Pet for Adoption</h1>
-      <p>Help find your pet a loving new home</p>
+      <p>Help find your pet a loving new home.</p>
     </div>
 
     <?php if ($error): ?>

@@ -47,7 +47,12 @@ $species_list = ['Dog','Cat','Bird','Rabbit','Hamster','Fish','Reptile','Other']
     <form method="GET">
       <div class="form-group">
         <label>Search</label>
-        <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Name or breed…">
+        <div class="search-input-group">
+          <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Name or breed…">
+          <button type="submit" class="search-icon-btn" aria-label="Search">
+            🔍
+          </button>
+        </div>
       </div>
       <div class="form-group">
         <label>Species</label>
@@ -61,7 +66,7 @@ $species_list = ['Dog','Cat','Bird','Rabbit','Hamster','Fish','Reptile','Other']
           <?php endforeach; ?>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary w-full btn-sm">Search</button>
+      <button type="submit" class="btn btn-primary w-full btn-sm">Browse</button>
       <?php if ($q || $species): ?>
         <a href="pets.php" class="btn btn-gray w-full btn-sm" style="margin-top:6px;text-align:center">Clear Filters</a>
       <?php endif; ?>
@@ -83,7 +88,7 @@ $species_list = ['Dog','Cat','Bird','Rabbit','Hamster','Fish','Reptile','Other']
     <?php else: ?>
     <div class="pets-grid">
       <?php foreach ($pets as $pet): ?>
-      <a href="pet.php?id=<?= $pet['id'] ?>" class="pet-card">
+      <a href="<?= is_logged_in() ? 'pet.php?id=' . $pet['id'] : 'register.php' ?>" class="pet-card">
         <div class="pet-card-img">
           <?php if ($pet['photo']): ?>
             <img src="uploads/pets/<?= htmlspecialchars($pet['photo']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>">

@@ -14,6 +14,7 @@ CREATE TABLE users (
   phone      VARCHAR(30),
   facebook   VARCHAR(200),
   address    VARCHAR(200),
+  profile_photo VARCHAR(200),
   created_at DATETIME DEFAULT NOW()
 );
 

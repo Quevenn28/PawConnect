@@ -5,7 +5,7 @@ session_start();
 $host = "localhost";
 $db   = "pawconnect";
 $user = "root";
-$pass = "";       // change to your MySQL password
+$pass = "root";       // change to your MySQL password
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);

@@ -13,11 +13,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $species     = trim($_POST['species']     ?? '');
     $breed       = trim($_POST['breed']       ?? '');
     $age         = trim($_POST['age']         ?? '');
-    $gender      = trim($_POST['gender']      ?? 'Unknown');
+    $gender      = trim($_POST['gender']      ?? '');
     $description = trim($_POST['description'] ?? '');
 
+    // --- VALIDATION ---
     if (!$name || !$species) {
         $error = 'Pet name and species are required.';
+
+    } elseif (!$breed) {
+        $error = 'Please enter the breed of your pet.';
+
+    } elseif (!$age) {
+        $error = 'Please enter the age of your pet.';
+
+    } elseif (!$gender) {
+        $error = 'Please select the sex of your pet.';
+
+    } elseif (!$description) {
+        $error = 'Please provide a description for your pet.';
+
     } else {
         $photo = null;
         if (!empty($_FILES['photo']['tmp_name'])) {

@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Full name is required.';
     } elseif (!$phone && !$facebook) {
         $error = 'Please provide at least a phone number or Facebook link.';
+    } elseif (!$address) {
+        $error = 'Address is required.';
     } else {
         // Handle photo upload
         if (!empty($_FILES['profile_photo']['tmp_name'])) {
@@ -84,16 +86,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="full_name" value="<?= htmlspecialchars($user['full_name']) ?>" required>
       </div>
       <div class="form-group">
-        <label>📞 Phone Number</label>
+        <label>📞 Phone Number <span class="req">*</span></label>
         <input type="tel" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+63 9XX XXX XXXX">
       </div>
       <div class="form-group">
-        <label>📘 Facebook URL</label>
+        <label>📘 Facebook URL <span class="req">*</span></label>
         <input type="url" name="facebook" value="<?= htmlspecialchars($user['facebook'] ?? '') ?>" placeholder="https://facebook.com/yourname">
       </div>
       <div class="form-group">
-        <label>📍 Address</label>
-        <input type="text" name="address" value="<?= htmlspecialchars($user['address'] ?? '') ?>" placeholder="City, Province">
+        <label>📍 Address <span class="req">*</span></label>
+        <input type="text" name="address" value="<?= htmlspecialchars($user['address'] ?? '') ?>" placeholder="City, Province" required>
       </div>
       <div class="form-group">
         <label>Profile Picture</label>
@@ -102,6 +104,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <input type="file" name="profile_photo" accept="image/*">
         <small style="color:var(--gray-4)">JPG, PNG or GIF under 5MB</small>
+      </div>
+
+      <div style="font-size:12px;color:var(--gray-4);margin-bottom:10px">
+        <span class="req">*</span> Required. At least one of Phone or Facebook is required.
       </div>
 
       <div style="display:flex;gap:10px">

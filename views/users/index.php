@@ -19,11 +19,11 @@ $adopted_hist = $pdo->prepare("SELECT * FROM adoptions WHERE owner_id=? ORDER BY
 $adopted_hist->execute([$user_id]);
 $adopted_hist = $adopted_hist->fetchAll();
 
-// Points & titles
-$pets_posted  = $userObj->getPetsPostedCount($user_id);
-$pets_adopted = $userObj->getPetsAdoptedCount($user_id);
-$rehomer_title = get_rehomer_title($pets_posted);
-$adopter_title = get_adopter_title($pets_adopted);
+// Points-based titles
+$rehomer_points = get_rehomer_points($pdo, $user_id);
+$adopter_points = get_adopter_points($pdo, $user_id);
+$rehomer_title  = get_rehomer_title($rehomer_points);
+$adopter_title  = get_adopter_title($adopter_points);
 ?>
 <!DOCTYPE html>
 <html lang="en">

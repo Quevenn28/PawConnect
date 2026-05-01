@@ -48,25 +48,26 @@ require_once '../../controllers/pets/create.php';
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Breed</label>
-          <input type="text" name="breed" placeholder="e.g. Labrador" value="<?= htmlspecialchars($_POST['breed'] ?? '') ?>">
+          <label>Breed <span class="req">*</span></label>
+          <input type="text" name="breed" placeholder="e.g. Labrador" value="<?= htmlspecialchars($_POST['breed'] ?? '') ?>" required>
         </div>
         <div class="form-group">
-          <label>Age</label>
-          <input type="text" name="age" placeholder="e.g. 3 months" value="<?= htmlspecialchars($_POST['age'] ?? '') ?>">
+          <label>Age <span class="req">*</span></label>
+          <input type="text" name="age" placeholder="e.g. 3 months" value="<?= htmlspecialchars($_POST['age'] ?? '') ?>" required>
         </div>
       </div>
       <div class="form-group">
-        <label>Gender</label>
-        <select name="gender">
+        <label>Sex <span class="req">*</span></label>
+        <select name="gender" required>
+          <option value="">-- Select --</option>
           <?php foreach (['Male','Female','Unknown'] as $g): ?>
-            <option <?= ($_POST['gender']??'Unknown')===$g?'selected':'' ?>><?= $g ?></option>
+            <option <?= ($_POST['gender']??'')===$g?'selected':'' ?>><?= $g ?></option>
           <?php endforeach; ?>
         </select>
       </div>
       <div class="form-group">
-        <label>About this Pet</label>
-        <textarea name="description" rows="4" placeholder="Personality, habits, ideal home…"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+        <label>About this Pet <span class="req">*</span></label>
+        <textarea name="description" rows="4" placeholder="Personality, habits, ideal home…" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
       </div>
 
       <div class="form-section">Photo</div>
@@ -79,6 +80,10 @@ require_once '../../controllers/pets/create.php';
         <div class="photo-preview" id="photoPreview" style="display:none;margin-top:10px">
           <img id="previewImg" src="" alt="" style="max-width:200px;border-radius:8px">
         </div>
+      </div>
+
+      <div style="font-size:12px;color:var(--gray-4);margin-top:4px">
+        <span class="req">*</span> Required fields
       </div>
 
       <div style="display:flex;gap:10px;margin-top:8px">

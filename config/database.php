@@ -91,10 +91,8 @@ function require_moderator() {
 function check_ban(array $user, $pdo): bool {
     if (!$user['is_banned']) return false;
 
-    // Temporary ban — check if it has expired
     if ($user['ban_until'] !== null) {
         if (new DateTime() > new DateTime($user['ban_until'])) {
-            // Ban expired — lift it automatically
             $pdo->prepare("
                 UPDATE users
                 SET is_banned=0, ban_reason=NULL, ban_until=NULL
@@ -104,7 +102,7 @@ function check_ban(array $user, $pdo): bool {
         }
     }
 
-    return true; // Still banned
+    return true;
 }
 
 // ============================================================
@@ -113,10 +111,6 @@ function check_ban(array $user, $pdo): bool {
 
 /**
  * Award points to a user and log the reason.
- * @param int    $user_id
- * @param int    $points   Amount to add
- * @param string $reason   Human-readable reason
- * @param string $type     'general' or 'mod'
  */
 function award_points($pdo, int $user_id, int $points, string $reason, string $type = 'general') {
     $col = $type === 'mod' ? 'mod_points' : 'points';
@@ -131,34 +125,71 @@ function award_points($pdo, int $user_id, int $points, string $reason, string $t
 }
 
 // ============================================================
+//  POINTS EARNED HELPERS
+//  Calculate points earned from specific action categories
+//  by reading point_logs — used for title calculations.
+// ============================================================
+
+/**
+ * Get total rehomer points earned by a user.
+ * Counts points from posting pets and having them adopted.
+ */
+function get_rehomer_points($pdo, int $user_id): int {
+    $stmt = $pdo->prepare("
+        SELECT COALESCE(SUM(points), 0)
+        FROM point_logs
+        WHERE user_id = ?
+          AND type = 'general'
+          AND (reason LIKE 'Posted pet%' OR reason LIKE 'Pet adopted%')
+    ");
+    $stmt->execute([$user_id]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Get total adopter points earned by a user.
+ * Counts points from adopting pets.
+ */
+function get_adopter_points($pdo, int $user_id): int {
+    $stmt = $pdo->prepare("
+        SELECT COALESCE(SUM(points), 0)
+        FROM point_logs
+        WHERE user_id = ?
+          AND type = 'general'
+          AND reason LIKE 'Adopted a pet%'
+    ");
+    $stmt->execute([$user_id]);
+    return (int) $stmt->fetchColumn();
+}
+
+// ============================================================
 //  TITLE HELPERS
 // ============================================================
 
 /**
- * Returns rehomer title based on number of pets posted.
+ * Returns rehomer title based on rehomer points earned.
  */
-function get_rehomer_title(int $pets_posted): string {
-    if ($pets_posted >= 21) return 'Pawsome Hero';
-    if ($pets_posted >= 11) return 'Rescue Advocate';
-    if ($pets_posted >= 6)  return 'Shelter Helper';
-    if ($pets_posted >= 3)  return 'Pet Friend';
+function get_rehomer_title(int $rehomer_points): string {
+    if ($rehomer_points >= 500) return 'Pawsome Hero';
+    if ($rehomer_points >= 200) return 'Rescue Advocate';
+    if ($rehomer_points >= 100) return 'Shelter Helper';
+    if ($rehomer_points >= 25)  return 'Pet Friend';
     return 'Newcomer';
 }
 
 /**
- * Returns adopter title based on number of pets adopted.
+ * Returns adopter title based on adopter points earned.
  */
-function get_adopter_title(int $pets_adopted): string {
-    if ($pets_adopted >= 11) return 'Adoption Champion';
-    if ($pets_adopted >= 6)  return 'Forever Family';
-    if ($pets_adopted >= 3)  return 'Loving Home';
-    if ($pets_adopted >= 1)  return 'First-Time Adopter';
+function get_adopter_title(int $adopter_points): string {
+    if ($adopter_points >= 600) return 'Adoption Champion';
+    if ($adopter_points >= 300) return 'Forever Family';
+    if ($adopter_points >= 150) return 'Loving Home';
+    if ($adopter_points >= 30)  return 'New Adopter';
     return 'Curious Soul';
 }
 
 /**
  * Returns moderator title based on mod_points.
- * Only shown if user is moderator or admin.
  */
 function get_mod_title(int $mod_points): string {
     if ($mod_points >= 1000) return 'Senior Moderator';
@@ -172,11 +203,11 @@ function get_mod_title(int $mod_points): string {
  */
 function get_rehomer_badge(string $title): string {
     return match($title) {
-        'Pawsome Hero'     => '🏆',
-        'Rescue Advocate'  => '🌟',
-        'Shelter Helper'   => '💛',
-        'Pet Friend'       => '🐾',
-        default            => '🌱',
+        'Pawsome Hero'    => '🏆',
+        'Rescue Advocate' => '🌟',
+        'Shelter Helper'  => '💛',
+        'Pet Friend'      => '🐾',
+        default           => '🌱',
     };
 }
 
@@ -188,7 +219,7 @@ function get_adopter_badge(string $title): string {
         'Adoption Champion' => '🏆',
         'Forever Family'    => '🏠',
         'Loving Home'       => '💙',
-        'First-Time Adopter'=> '🌟',
+        'New Adopter'       => '🌟',
         default             => '🔍',
     };
 }
@@ -198,26 +229,27 @@ function get_adopter_badge(string $title): string {
  */
 function get_mod_badge(string $title): string {
     return match($title) {
-        'Senior Moderator'       => '🛡️',
-        'Junior Moderator'       => '⚔️',
-        'Rookie Moderator'       => '🔰',
-        default                  => '📋',
+        'Senior Moderator' => '🛡️',
+        'Junior Moderator' => '⚔️',
+        'Rookie Moderator' => '🔰',
+        default            => '📋',
     };
 }
 
 // ============================================================
 //  POINTS CONSTANTS
-//  Centralized so you only change numbers in one place
 // ============================================================
-define('PTS_REGISTER',          5);
-define('PTS_POST_PET',         10);
-define('PTS_PET_ADOPTED',      15);   // awarded to owner
-define('PTS_ADOPT_PET',        30);   // awarded to adopter
-define('PTS_MOD_REMOVE_POST',  15);   // mod_points
-define('PTS_MOD_DISMISS',       5);   // mod_points
-define('PTS_ADMIN_ACTION',     15);   // mod_points
+define('PTS_REGISTER',         5);
+define('PTS_POST_PET',        10);
+define('PTS_PET_ADOPTED',     15);   // awarded to owner
+define('PTS_ADOPT_PET',       30);   // awarded to adopter
+define('PTS_MOD_REMOVE_POST', 15);   // mod_points
+define('PTS_MOD_DISMISS',      5);   // mod_points
+define('PTS_ADMIN_ACTION',    15);   // mod_points
 
-
+// ============================================================
+//  ID ENCODE/DECODE HELPERS
+// ============================================================
 function encode_id(int $id): string {
     return base64_encode($id * 7919 + 12345);
 }

@@ -96,6 +96,7 @@ class AdoptionRequest {
     /**
      * Approve or reject a request.
      * Only the pet owner can do this.
+     * Returns the request data if approved, false on failure.
      */
     public function handle(int $request_id, int $owner_id, string $action): bool {
         if (!in_array($action, ['approved', 'rejected'])) return false;
@@ -109,6 +110,7 @@ class AdoptionRequest {
         $stmt->execute([$request_id, $owner_id]);
         if (!$stmt->fetch()) return false;
 
+        // Update this request status
         $this->pdo->prepare("
             UPDATE adoption_requests SET status=? WHERE id=?
         ")->execute([$action, $request_id]);

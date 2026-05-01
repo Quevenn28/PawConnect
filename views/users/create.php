@@ -92,7 +92,7 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>📞 Phone / Mobile</label>
+          <label>📞 Phone / Mobile <span class="req">*</span></label>
           <input
             type="tel" name="phone"
             placeholder="+63 9XX XXX XXXX"
@@ -100,7 +100,7 @@
           >
         </div>
         <div class="form-group">
-          <label>📘 Facebook Profile URL</label>
+          <label>📘 Facebook Profile URL <span class="req">*</span></label>
           <input
             type="url" name="facebook"
             placeholder="https://facebook.com/yourname"
@@ -110,17 +110,22 @@
       </div>
 
       <div class="form-group">
-        <label>📍 Address / Location</label>
+        <label>📍 Address / Location <span class="req">*</span></label>
         <input
           type="text" name="address"
           placeholder="City, Province"
           value="<?= htmlspecialchars($_POST['address'] ?? '') ?>"
+          required
         >
       </div>
 
       <!-- Points Notice -->
       <div class="points-notice">
         🎁 You'll receive <strong><?= PTS_REGISTER ?> welcome points</strong> for creating your account!
+      </div>
+
+      <div style="margin-top:8px;font-size:12px;color:var(--gray-4)">
+        <span class="req">*</span> Required fields. At least one of Phone or Facebook is required.
       </div>
 
       <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">

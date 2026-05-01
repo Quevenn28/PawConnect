@@ -42,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!$phone && !$facebook) {
         $error = 'Please provide at least a phone number or Facebook link so adopters can contact you.';
 
+    } elseif (!$address) {
+        $error = 'Please provide your address or location.';
+
     } else {
         $userObj = new User($pdo);
 

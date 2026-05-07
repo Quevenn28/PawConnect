@@ -130,6 +130,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="password" name="password" id="passwordInput" placeholder="Your password" required>
           <button type="button" class="toggle-pw" onclick="togglePassword()">👁️</button>
         </div>
+        <div style="text-align:right;margin-top:4px">
+          <a href="forgot-password.php" style="font-size:12px;color:var(--blue);text-decoration:none">Forgot password?</a>
+        </div>
       </div>
 
       <button type="submit" class="btn btn-primary w-full">Sign In 🐾</button>

@@ -39,7 +39,7 @@ require_once '../../controllers/pets/create.php';
         <div class="form-group">
           <label>Species <span class="req">*</span></label>
           <select name="species" required>
-            <option value="">-- Select --</option>
+            <!-- <option value="">-- Select --</option> -->
             <?php foreach (['Dog','Cat','Bird','Rabbit','Hamster','Fish','Reptile','Other'] as $sp): ?>
               <option <?= ($_POST['species']??'')===$sp?'selected':'' ?>><?= $sp ?></option>
             <?php endforeach; ?>
@@ -53,13 +53,22 @@ require_once '../../controllers/pets/create.php';
         </div>
         <div class="form-group">
           <label>Age <span class="req">*</span></label>
-          <input type="text" name="age" placeholder="e.g. 3 months" value="<?= htmlspecialchars($_POST['age'] ?? '') ?>" required>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input type="number" min="0" name="age_value" value="<?= htmlspecialchars($_POST['age_value'] ?? '') ?>" placeholder="3" required>
+            <select name="age_unit" required>
+              <!-- <option value="">Unit</option> -->
+              <option value="day" <?= ($_POST['age_unit'] ?? '') === 'day' ? 'selected' : '' ?>>Days</option>
+              <option value="week" <?= ($_POST['age_unit'] ?? '') === 'week' ? 'selected' : '' ?>>Weeks</option>
+              <option value="month" <?= ($_POST['age_unit'] ?? '') === 'month' ? 'selected' : '' ?>>Months</option>
+              <option value="year" <?= ($_POST['age_unit'] ?? '') === 'year' ? 'selected' : '' ?>>Years</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label>Sex <span class="req">*</span></label>
         <select name="gender" required>
-          <option value="">-- Select --</option>
+          <!-- <option value="">-- Select --</option> -->
           <?php foreach (['Male','Female','Unknown'] as $g): ?>
             <option <?= ($_POST['gender']??'')===$g?'selected':'' ?>><?= $g ?></option>
           <?php endforeach; ?>
@@ -70,10 +79,31 @@ require_once '../../controllers/pets/create.php';
         <textarea name="description" rows="4" placeholder="Personality, habits, ideal home…" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
       </div>
 
+      <div class="form-row">
+        <div class="form-group" style="padding-top:8px;">
+          <label class="check-label"><input type="checkbox" name="vaccinated" value="1" <?= isset($_POST['vaccinated']) ? 'checked' : '' ?>> Vaccinated</label>
+        </div>
+        <div class="form-group" style="padding-top:8px;">
+          <label class="check-label"><input type="checkbox" name="spayed_neutered" value="1" <?= isset($_POST['spayed_neutered']) ? 'checked' : '' ?>> Spayed / Neutered</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Medical Notes <span class="text-gray">(optional)</span></label>
+        <textarea name="health_info" rows="3" placeholder="Additional medical details or special care notes…"><?= htmlspecialchars($_POST['health_info'] ?? '') ?></textarea>
+      </div>
+      <div class="form-group">
+        <label>Good with Children <span class="req">*</span></label>
+        <select name="good_with_children" required>
+          <?php foreach (['Unknown','Yes','No'] as $option): ?>
+            <option <?= ($_POST['good_with_children'] ?? 'Unknown') === $option ? 'selected' : '' ?>><?= $option ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
       <div class="form-section">Photo</div>
       <div class="form-group">
         <div class="file-upload">
-          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="previewPhoto(this)">
+          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="previewPhoto(this)" required>
           <label for="photoInput" class="file-upload-btn">📷 Choose Photo</label>
           <span class="file-name" id="fileName">No file chosen</span>
         </div>

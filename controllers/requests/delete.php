@@ -7,6 +7,7 @@ verify_csrf();
 
 $reqObj = new AdoptionRequest($pdo);
 $reqObj->softDelete((int)($_POST['request_id'] ?? 0), $_SESSION['user_id']);
+flash('success', 'Your adoption request has been removed.');
 
 header("Location: ../../views/users/index.php");
 exit;

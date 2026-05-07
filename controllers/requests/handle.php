@@ -19,7 +19,8 @@ if ($result && $action === 'approved') {
         SELECT ar.*,
                u.full_name AS adopter_name, u.email AS adopter_email, u.phone AS adopter_phone,
                p.name AS pet_name, p.id AS pet_id,
-               o.full_name AS owner_name, o.email AS owner_email, o.phone AS owner_phone
+               o.full_name AS owner_name, o.email AS owner_email, o.phone AS owner_phone,
+               o.id AS owner_id
         FROM adoption_requests ar
         JOIN users u ON u.id = ar.requester_id
         JOIN pets  p ON p.id = ar.pet_id
@@ -63,6 +64,44 @@ if ($result && $action === 'approved') {
 
         // 5. Award points to adopter
         award_points($pdo, $adopter_id, PTS_ADOPT_PET, 'Adopted a pet: '.$req['pet_name'], 'general');
+
+        $notif = new Notification($pdo);
+        $notif->create(
+            $adopter_id,
+            'Your request to adopt "' . $req['pet_name'] . '" has been approved.',
+            '/views/pets/show.php?id=' . encode_id($pet_id)
+        );
+
+        $other_rejects = $pdo->prepare("
+            SELECT requester_id FROM adoption_requests
+            WHERE pet_id=? AND id!=? AND status='rejected'
+        ");
+        $other_rejects->execute([$pet_id, $request_id]);
+        while ($other = $other_rejects->fetch()) {
+            $notif->create(
+                $other['requester_id'],
+                'Your request to adopt "' . $req['pet_name'] . '" was not selected.',
+                '/views/pets/show.php?id=' . encode_id($pet_id)
+            );
+        }
+    }
+} elseif ($result && $action === 'rejected') {
+    $stmt = $pdo->prepare("
+        SELECT ar.*, p.name AS pet_name, p.id AS pet_id
+        FROM adoption_requests ar
+        JOIN pets p ON p.id = ar.pet_id
+        WHERE ar.id = ?
+    ");
+    $stmt->execute([$request_id]);
+    $req = $stmt->fetch();
+
+    if ($req) {
+        $notif = new Notification($pdo);
+        $notif->create(
+            $req['requester_id'],
+            'Your adoption request for "' . $req['pet_name'] . '" was rejected.',
+            '/views/pets/show.php?id=' . encode_id($req['pet_id'])
+        );
     }
 }
 

@@ -14,6 +14,7 @@ class Report {
         'Animal abuse or cruelty',
         'Spam or advertisement',
         'Already adopted but still listed',
+        'Suspicious owner or account',
         'Offensive language',
         'Other',
     ];

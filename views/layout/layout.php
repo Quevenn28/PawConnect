@@ -5,13 +5,19 @@
 // ============================================================
 
 function navbar($pdo) {
-    $role          = get_role();
-    $is_mod        = is_moderator();
-    $pending_count = 0;
+    $role            = get_role();
+    $is_mod          = is_moderator();
+    $pending_count   = 0;
+    $unread_notifs   = 0;
 
     if ($is_mod) {
         $r             = new Report($pdo);
         $pending_count = $r->getPendingCount();
+    }
+
+    if (is_logged_in()) {
+        $notifObj      = new Notification($pdo);
+        $unread_notifs = $notifObj->countUnread($_SESSION['user_id']);
     }
     ?>
     <nav class="navbar">
@@ -38,6 +44,20 @@ function navbar($pdo) {
       </div>
     </nav>
     <?php
+    render_flash();
+}
+
+function render_flash() {
+    $messages = get_flash_messages();
+    if (!$messages) {
+        return;
+    }
+    echo '<div class="flash-notice-wrap">';
+    foreach ($messages as $msg) {
+        $type = $msg['type'] === 'error' ? 'alert-error' : ($msg['type'] === 'success' ? 'alert-success' : 'alert-info');
+        echo '<div class="alert ' . $type . '">' . htmlspecialchars($msg['message']) . '</div>';
+    }
+    echo '</div>';
 }
 
 function footer_bar() { ?>
@@ -45,10 +65,8 @@ function footer_bar() { ?>
       <div class="footer-logo">🐾 PawConnect</div>
       <div class="footer-links">
         <a href="/views/pets/index.php">Browse Pets</a>
-        <?php if (!is_logged_in()): ?>
-          <a href="/register.php">Register</a>
-          <a href="/login.php">Login</a>
-        <?php endif; ?>
+        <a href="/register.php">Register</a>
+        <a href="/login.php">Login</a>
       </div>
       <p>© <?= date('Y') ?> PawConnect. Connecting pets with forever homes.</p>
     </div>

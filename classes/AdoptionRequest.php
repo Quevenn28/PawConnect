@@ -67,7 +67,7 @@ class AdoptionRequest {
     public function hasRequested(int $pet_id, int $user_id): bool {
         $stmt = $this->pdo->prepare("
             SELECT id FROM adoption_requests
-            WHERE pet_id=? AND requester_id=?
+            WHERE pet_id=? AND requester_id=? AND status != 'deleted'
         ");
         $stmt->execute([$pet_id, $user_id]);
         return (bool) $stmt->fetch();

@@ -31,7 +31,7 @@ class Pet {
      * Get all available pets with optional search/filter.
      * Only shows status='available' to public.
      */
-    public function getAvailable(string $species = '', string $query = ''): array {
+    public function getAvailable(string $species = '', string $query = '', string $breed = '', string $health_info = '', string $vaccinated = '', string $age_value = '', string $age_unit = '', string $sort = 'recent'): array {
         $where  = ["p.status = 'available'"];
         $params = [];
 
@@ -40,17 +40,40 @@ class Pet {
             $params[] = $species;
         }
         if ($query) {
-            $where[]  = "(p.name LIKE ? OR p.breed LIKE ?)";
+            $where[]  = "(p.name LIKE ? OR p.breed LIKE ? OR p.description LIKE ? OR p.health_info LIKE ? OR u.full_name LIKE ? OR u.address LIKE ? )";
+            $params[] = "%$query%";
+            $params[] = "%$query%";
+            $params[] = "%$query%";
             $params[] = "%$query%";
             $params[] = "%$query%";
         }
+        if ($breed) {
+            $where[]  = "p.breed LIKE ?";
+            $params[] = "%$breed%";
+        }
+        if ($health_info) {
+            $where[]  = "p.health_info LIKE ?";
+            $params[] = "%$health_info%";
+        }
+        if ($vaccinated) {
+            $where[]  = "p.vaccinated = ?";
+            $params[] = $vaccinated;
+        }
+        if ($age_value && $age_unit) {
+            $age_unit = strtolower($age_unit);
+            $where[]  = "(p.age LIKE ? OR p.age LIKE ?)";
+            $params[] = "%$age_value $age_unit%";
+            $params[] = "%$age_value {$age_unit}s%";
+        }
+
+        $order = $sort === 'alpha' ? 'p.name ASC' : 'p.created_at DESC';
 
         $sql = "
             SELECT p.*, u.full_name, u.phone, u.email, u.facebook
             FROM pets p
             JOIN users u ON u.id = p.user_id
             WHERE " . implode(" AND ", $where) . "
-            ORDER BY p.created_at DESC
+            ORDER BY $order
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -80,7 +103,9 @@ class Pet {
         $params = [];
 
         if ($query) {
-            $where[]  = "(p.name LIKE ? OR p.breed LIKE ? OR u.full_name LIKE ?)";
+            $where[]  = "(p.name LIKE ? OR p.breed LIKE ? OR p.description LIKE ? OR u.full_name LIKE ? OR u.address LIKE ?)";
+            $params[] = "%$query%";
+            $params[] = "%$query%";
             $params[] = "%$query%";
             $params[] = "%$query%";
             $params[] = "%$query%";
@@ -109,18 +134,49 @@ class Pet {
         string $age,
         string $gender,
         string $description,
+        ?string $health_info,
+        string $vaccinated,
+        string $spayed_neutered,
+        string $good_with_children,
         ?string $photo
     ): int {
         $stmt = $this->pdo->prepare("
             INSERT INTO pets
-                (user_id, name, species, breed, age, gender, description, photo)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (user_id, name, species, breed, age, gender, description, health_info, vaccinated, spayed_neutered, good_with_children, photo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $user_id, $name, $species, $breed,
-            $age, $gender, $description, $photo
+            $age, $gender, $description, $health_info,
+            $vaccinated, $spayed_neutered, $good_with_children, $photo
         ]);
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function update(
+        int    $pet_id,
+        string $name,
+        string $species,
+        string $breed,
+        string $age,
+        string $gender,
+        string $description,
+        ?string $health_info,
+        string $vaccinated,
+        string $spayed_neutered,
+        string $good_with_children,
+        ?string $photo
+    ): bool {
+        $stmt = $this->pdo->prepare("\n            UPDATE pets SET
+                name = ?, species = ?, breed = ?, age = ?, gender = ?,
+                description = ?, health_info = ?, vaccinated = ?, spayed_neutered = ?, good_with_children = ?, photo = ?
+            WHERE id = ?
+        ");
+        return $stmt->execute([
+            $name, $species, $breed, $age, $gender,
+            $description, $health_info, $vaccinated, $spayed_neutered, $good_with_children, $photo,
+            $pet_id
+        ]);
     }
 
     // ----------------------------------------------------------

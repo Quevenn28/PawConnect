@@ -13,8 +13,10 @@ $reportObj = new Report($pdo);
 $ok        = $reportObj->create($pet_id, $_SESSION['user_id'], $reason, $details);
 
 if ($ok) {
-    header("Location: ../../views/pets/show.php?id=$pet_id&reported=1");
+    flash('success', 'Report submitted. Our moderators will review it shortly.');
+    header("Location: ../../views/pets/show.php?id=$pet_id");
 } else {
-    header("Location: ../../views/pets/show.php?id=$pet_id&error=".urlencode("Could not submit report. You may have already reported this listing."));
+    flash('error', 'Could not submit report. You may have already reported this listing.');
+    header("Location: ../../views/pets/show.php?id=$pet_id");
 }
 exit;

@@ -27,6 +27,13 @@ if ($action === 'remove') {
     $reportObj->markRemoved($report_id, $_SESSION['user_id']);
     $petObj->softDelete($pet_id, $_SESSION['user_id'], get_role());
 
+    $notif = new Notification($pdo);
+    $notif->create(
+        $pet['user_id'],
+        'Your listing "' . $pet['name'] . '" was removed by ' . ucfirst(get_role()) . ' due to report reason: ' . $report['reason'] . '. ' . ($report['details'] ? 'Details: ' . $report['details'] : ''),
+        '/views/users/index.php'
+    );
+
     $log_id = $logObj->log(
         $_SESSION['user_id'],
         ModLog::ACTION_REMOVED_POST,

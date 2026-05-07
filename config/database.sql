@@ -25,6 +25,8 @@ CREATE TABLE users (
   is_banned     TINYINT       DEFAULT 0,
   ban_reason    TEXT,
   ban_until     DATETIME      NULL,             -- NULL = permanent ban
+  password_reset_token VARCHAR(255) NULL,       -- For password recovery
+  password_reset_expires DATETIME NULL,         -- Token expiration (24 hours)
   created_at    DATETIME      DEFAULT NOW()
 );
 
@@ -36,12 +38,16 @@ CREATE TABLE pets (
   user_id     INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
   species     VARCHAR(50)  NOT NULL,
-  breed       VARCHAR(100),
-  age         VARCHAR(50),
-  gender      VARCHAR(20)  DEFAULT 'Unknown',
-  description TEXT,
-  photo       VARCHAR(200),
-  status      ENUM('available','pending','adopted','removed') DEFAULT 'available',
+  breed               VARCHAR(100),
+  age                 VARCHAR(50),
+  gender              VARCHAR(20)  DEFAULT 'Unknown',
+  description         TEXT,
+  health_info         TEXT,
+  vaccinated          ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
+  spayed_neutered     ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
+  good_with_children  ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
+  photo               VARCHAR(200),
+  status              ENUM('available','pending','adopted','removed') DEFAULT 'available',
   removed_by  ENUM('user','moderator','admin') NULL,  -- who removed it
   removed_at  DATETIME     NULL,
   created_at  DATETIME     DEFAULT NOW(),
@@ -130,6 +136,19 @@ CREATE TABLE point_logs (
 );
 
 -- ============================================================
+--  NOTIFICATIONS TABLE
+-- ============================================================
+CREATE TABLE notifications (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT          NOT NULL,
+  message    VARCHAR(255) NOT NULL,
+  link       VARCHAR(255) NULL,
+  is_read    TINYINT      DEFAULT 0,
+  created_at DATETIME     DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- ============================================================
 --  DEFAULT ADMIN ACCOUNT
 --  Username: admin | Password: admin123
 --  CHANGE THIS PASSWORD IMMEDIATELY AFTER SETUP
@@ -148,3 +167,10 @@ ALTER TABLE users
 ADD COLUMN is_banned  TINYINT  DEFAULT 0,
 ADD COLUMN ban_reason TEXT,
 ADD COLUMN ban_until  DATETIME NULL;
+
+-- ============================================================
+--  PETS TABLE UPDATES (for existing databases)
+-- ============================================================
+ALTER TABLE pets ADD COLUMN health_info TEXT;
+ALTER TABLE pets ADD COLUMN spayed_neutered ENUM('Yes','No','Unknown') DEFAULT 'Unknown';
+ALTER TABLE pets ADD COLUMN good_with_children ENUM('Yes','No','Unknown') DEFAULT 'Unknown';

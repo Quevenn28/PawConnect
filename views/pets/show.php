@@ -46,6 +46,11 @@ if (is_logged_in()) {
     <div class="alert alert-error"><?= htmlspecialchars($_GET['error']) ?></div>
   <?php endif; ?>
 
+  <div style="margin-bottom:20px;">
+    <a href="javascript:history.back()" class="btn btn-outline btn-sm">← Back</a>
+    <a href="index.php" class="btn btn-gray btn-sm" style="margin-left:10px;">Browse Pets</a>
+  </div>
+
   <?php if ($pet['status'] === 'removed' && is_moderator()): ?>
     <div class="alert" style="background:#1f2937;color:#f9fafb;border:2px solid var(--red)">
       🚫 This listing has been removed and is only visible to moderators/admins.
@@ -71,7 +76,16 @@ if (is_logged_in()) {
       <div class="attrs-grid">
         <div class="attr-item"><span>Age</span><strong><?= htmlspecialchars($pet['age']?:'Unknown') ?></strong></div>
         <div class="attr-item"><span>Gender</span><strong><?= htmlspecialchars($pet['gender']) ?></strong></div>
+        <div class="attr-item"><span>Spayed / Neutered</span><strong><?= htmlspecialchars($pet['spayed_neutered'] ?? 'Unknown') ?></strong></div>
+        <div class="attr-item"><span>Good with Children</span><strong><?= htmlspecialchars($pet['good_with_children'] ?? 'Unknown') ?></strong></div>
       </div>
+
+      <?php if ($pet['health_info']): ?>
+      <div class="about-section">
+        <h3>Health Notes</h3>
+        <p><?= nl2br(htmlspecialchars($pet['health_info'])) ?></p>
+      </div>
+      <?php endif; ?>
 
       <?php if ($pet['description']): ?>
       <div class="about-section">
@@ -130,13 +144,13 @@ if (is_logged_in()) {
           <?php if ($already_reported): ?>
             <span style="font-size:12px;color:var(--gray-4)">✓ You've already reported this listing.</span>
           <?php else: ?>
-            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing</button>
+            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing or owner</button>
           <?php endif; ?>
         </div>
 
         <!-- Report form (hidden by default) -->
         <div id="reportForm" style="display:none;margin-top:12px;background:var(--gray-6);border:1px solid var(--gray-5);border-radius:var(--radius-lg);padding:16px">
-          <h4 style="margin-bottom:10px;font-size:14px">Report Listing</h4>
+          <h4 style="margin-bottom:10px;font-size:14px">Report Listing or Owner</h4>
           <form method="POST" action="../../controllers/reports/create.php">
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">

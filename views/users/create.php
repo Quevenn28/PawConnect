@@ -71,7 +71,7 @@
         <div class="form-group">
           <label>Password <span class="req">*</span></label>
           <div class="password-wrap">
-            <input type="password" name="password" id="pw1" placeholder="Min. 6 characters" required>
+            <input type="password" name="password" id="pw1" placeholder="Min. 8 characters" required>
             <button type="button" class="toggle-pw" onclick="togglePw('pw1')">👁️</button>
           </div>
         </div>
@@ -122,6 +122,13 @@
       <!-- Points Notice -->
       <div class="points-notice">
         🎁 You'll receive <strong><?= PTS_REGISTER ?> welcome points</strong> for creating your account!
+      </div>
+
+      <div class="form-group" style="margin-top:12px">
+        <label class="checkbox-label">
+          <input type="checkbox" name="agree_terms" value="1" required>
+          I agree to the <a href="terms.php" target="_blank">Terms & Conditions</a> and <a href="terms.php#privacy" target="_blank">Privacy Policy</a>.
+        </label>
       </div>
 
       <div style="margin-top:8px;font-size:12px;color:var(--gray-4)">

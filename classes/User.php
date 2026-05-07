@@ -119,21 +119,25 @@ class User {
         string $phone,
         string $facebook,
         string $address,
-        ?string $profile_photo = null
+        ?string $profile_photo = null,
+        ?string $new_password = null
     ): void {
+        $updates = ['full_name=?', 'phone=?', 'facebook=?', 'address=?'];
+        $params  = [$full_name, $phone, $facebook, $address];
+
         if ($profile_photo !== null) {
-            $this->pdo->prepare("
-                UPDATE users
-                SET full_name=?, phone=?, facebook=?, address=?, profile_photo=?
-                WHERE id=?
-            ")->execute([$full_name, $phone, $facebook, $address, $profile_photo, $user_id]);
-        } else {
-            $this->pdo->prepare("
-                UPDATE users
-                SET full_name=?, phone=?, facebook=?, address=?
-                WHERE id=?
-            ")->execute([$full_name, $phone, $facebook, $address, $user_id]);
+            $updates[] = 'profile_photo=?';
+            $params[]  = $profile_photo;
         }
+
+        if ($new_password !== null) {
+            $updates[] = 'password=?';
+            $params[]  = password_hash($new_password, PASSWORD_DEFAULT);
+        }
+
+        $params[] = $user_id;
+        $sql = "UPDATE users SET " . implode(',', $updates) . " WHERE id=?";
+        $this->pdo->prepare($sql)->execute($params);
     }
 
     // ----------------------------------------------------------
@@ -197,5 +201,61 @@ class User {
         ");
         $stmt->execute([$email, $username]);
         return (bool) $stmt->fetch();
+    }
+
+    // ----------------------------------------------------------
+    //  PASSWORD RESET
+    // ----------------------------------------------------------
+
+    /**
+     * Generate a password reset token and store it.
+     * Token expires in 24 hours.
+     */
+    public function generatePasswordReset(int $user_id): string {
+        $token = bin2hex(random_bytes(32));
+        $expires = (new DateTime())->modify('+24 hours')->format('Y-m-d H:i:s');
+
+        $this->pdo->prepare("
+            UPDATE users
+            SET password_reset_token=?, password_reset_expires=?
+            WHERE id=?
+        ")->execute([$token, $expires, $user_id]);
+
+        return $token;
+    }
+
+    /**
+     * Verify a password reset token.
+     */
+    public function verifyPasswordResetToken(string $token): array|false {
+        $stmt = $this->pdo->prepare("
+            SELECT id, email, password_reset_expires
+            FROM users
+            WHERE password_reset_token=?
+        ");
+        $stmt->execute([$token]);
+        $user = $stmt->fetch();
+
+        if (!$user) return false;
+
+        if (new DateTime() > new DateTime($user['password_reset_expires'])) {
+            // Token expired
+            $this->pdo->prepare("UPDATE users SET password_reset_token=NULL, password_reset_expires=NULL WHERE id=?")
+                ->execute([$user['id']]);
+            return false;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Reset password using token.
+     */
+    public function resetPassword(int $user_id, string $new_password): void {
+        $this->pdo->prepare("
+            UPDATE users
+            SET password=?, password_reset_token=NULL, password_reset_expires=NULL
+            WHERE id=?
+        ")->execute([password_hash($new_password, PASSWORD_DEFAULT), $user_id]);
     }
 }

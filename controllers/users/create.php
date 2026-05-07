@@ -36,14 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm) {
         $error = 'Passwords do not match.';
 
-    } elseif (strlen($password) < 6) {
-        $error = 'Password must be at least 6 characters.';
+    } elseif (strlen($password) < 8) {
+        $error = 'Password must be at least 8 characters.';
 
     } elseif (!$phone && !$facebook) {
         $error = 'Please provide at least a phone number or Facebook link so adopters can contact you.';
 
     } elseif (!$address) {
         $error = 'Please provide your address or location.';
+
+    } elseif (!isset($_POST['agree_terms'])) {
+        $error = 'You must agree to the Terms & Conditions to continue.';
 
     } else {
         $userObj = new User($pdo);

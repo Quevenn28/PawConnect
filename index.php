@@ -6,7 +6,6 @@ require_once 'views/layout/layout.php';
 $petObj      = new Pet($pdo);
 $total_pets  = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='available'")->fetchColumn();
 $total_adopt = $pdo->query("SELECT COUNT(*) FROM adoptions")->fetchColumn();
-$total_users = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=0")->fetchColumn();
 $recent_pets = $petObj->getAvailable();
 $recent_pets = array_slice($recent_pets, 0, 6);
 ?>
@@ -32,7 +31,6 @@ $recent_pets = array_slice($recent_pets, 0, 6);
   <div class="hero-stats">
     <div class="stat"><strong><?= $total_pets ?></strong><span>Pets Available</span></div>
     <div class="stat"><strong><?= $total_adopt ?></strong><span>Adopted</span></div>
-    <div class="stat"><strong><?= $total_users ?></strong><span>Members</span></div>
   </div>
 </div>
 

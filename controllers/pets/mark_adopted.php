@@ -49,6 +49,8 @@ if ($pet && $pet['user_id'] == $_SESSION['user_id'] && $pet['status'] === 'avail
     if ($adopter) {
         award_points($pdo, $adopter['uid'], PTS_ADOPT_PET, 'Adopted a pet: '.$pet['name'], 'general');
     }
+
+    flash('success', 'Great news! Your pet has been marked as adopted.');
 }
 
 header("Location: ../../views/users/index.php");

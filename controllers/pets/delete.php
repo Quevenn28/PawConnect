@@ -7,5 +7,6 @@ verify_csrf();
 
 $petObj = new Pet($pdo);
 $petObj->softDelete((int)($_POST['pet_id'] ?? 0), $_SESSION['user_id'], 'user');
+flash('success', 'Your listing has been removed from public view.');
 header("Location: ../../views/users/index.php");
 exit;

@@ -15,8 +15,57 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE,         PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+    // Automatically lift any expired temporary bans on each request.
+    try {
+        $pdo->exec("UPDATE users SET is_banned=0, ban_reason=NULL, ban_until=NULL WHERE is_banned=1 AND ban_until IS NOT NULL AND ban_until <= NOW()");
+    } catch (PDOException $e) {
+        // Ignore if users table does not exist yet.
+    }
+
+    // Ensure pet metadata columns exist for content quality enhancements.
+    try {
+        $columnsToAdd = [
+            'health_info'        => 'TEXT NULL',
+            'vaccinated'         => "ENUM('Yes','No','Unknown') DEFAULT 'Unknown'",
+            'spayed_neutered'    => "ENUM('Yes','No','Unknown') DEFAULT 'Unknown'",
+            'good_with_children' => "ENUM('Yes','No','Unknown') DEFAULT 'Unknown'"
+        ];
+
+        foreach ($columnsToAdd as $column => $definition) {
+            $exists = $pdo->query("SHOW COLUMNS FROM pets LIKE '$column'")->fetch();
+            if (!$exists) {
+                $pdo->exec("ALTER TABLE pets ADD COLUMN $column $definition");
+            }
+        }
+    } catch (PDOException $e) {
+        // Ignore if the pets table does not exist yet or schema cannot be altered.
+    }
+
+    // Ensure password reset columns exist
+    try {
+        $exists = $pdo->query("SHOW COLUMNS FROM users LIKE 'password_reset_token'")->fetch();
+        if (!$exists) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN password_reset_token VARCHAR(255) NULL, ADD COLUMN password_reset_expires DATETIME NULL");
+        }
+    } catch (PDOException $e) {
+        // Ignore if the users table does not exist yet or schema cannot be altered.
+    }
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());
+}
+
+// ============================================================
+//  FLASH NOTICE HELPERS
+// ============================================================
+function flash(string $type, string $message): void {
+    $_SESSION['flash'][] = ['type' => $type, 'message' => $message];
+}
+
+function get_flash_messages(): array {
+    $messages = $_SESSION['flash'] ?? [];
+    unset($_SESSION['flash']);
+    return $messages;
 }
 
 // ============================================================

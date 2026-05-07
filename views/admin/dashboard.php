@@ -17,7 +17,7 @@ $total_mods     = $pdo->query("SELECT COUNT(*) FROM users WHERE role='moderator'
 $total_pets     = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='available'")->fetchColumn();
 $total_removed  = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='removed'")->fetchColumn();
 $pending_reports= $reportObj->getPendingCount();
-$total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1")->fetchColumn();
+$total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1 AND (ban_until IS NULL OR ban_until > NOW())")->fetchColumn();
 
 // Tab data
 $reports   = $tab === 'reports' ? $reportObj->getPending() : [];
@@ -30,7 +30,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title><?= is_admin() ? 'Admin' : 'Moderator' ?> Panel — PawConnect</title>
+  <title><?= is_admin() ? 'Admin' : 'Moderator' ?> Dashboard — PawConnect</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -41,56 +41,57 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 
   <div class="admin-header">
     <div>
-      <h1><?= is_admin() ? '⚙️ Admin Panel' : '🛡️ Moderator Panel' ?></h1>
-      <p style="color:var(--gray-4);font-size:14px">Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?> — <?= ucfirst(get_role()) ?></p>
+      <h1><?= is_admin() ? '⚙️ Admin Dashboard' : '🛡️ Moderator Dashboard' ?></h1>
+      <p style="color:var(--gray-4);font-size:14px">Manage users, pet listings, reported content, moderation logs, roles, and bans from one place.</p>
     </div>
-    <a href="../users/index.php" class="btn btn-gray btn-sm">← My Dashboard</a>
+    <a href="../users/index.php" class="btn btn-gray btn-sm">← User Dashboard</a>
   </div>
 
-  <!-- Stat Cards -->
-  <div class="stat-cards">
-    <div class="stat-card red">
-      <div class="stat-num"><?= $pending_reports ?></div>
-      <div class="stat-lbl">Pending Reports</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num"><?= $total_pets ?></div>
-      <div class="stat-lbl">Active Listings</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num"><?= $total_removed ?></div>
-      <div class="stat-lbl">Removed Posts</div>
-    </div>
-    <?php if (is_admin()): ?>
-    <div class="stat-card blue">
-      <div class="stat-num"><?= $total_users ?></div>
-      <div class="stat-lbl">Regular Users</div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-num"><?= $total_mods ?></div>
-      <div class="stat-lbl">Moderators</div>
-    </div>
-    <div class="stat-card red">
-      <div class="stat-num"><?= $total_banned ?></div>
-      <div class="stat-lbl">Banned Users</div>
-    </div>
-    <?php endif; ?>
-  </div>
+  <div class="admin-grid">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-title">Admin Menu</div>
+      <div class="admin-tabs">
+        <a href="?tab=reports" class="admin-tab <?= $tab==='reports'?'active':'' ?>">
+          🚩 Reports <?php if($pending_reports>0): ?><span class="tab-badge"><?= $pending_reports ?></span><?php endif; ?>
+        </a>
+        <a href="?tab=pets"   class="admin-tab <?= $tab==='pets'?'active':'' ?>">🐾 All Pets</a>
+        <a href="?tab=mylogs" class="admin-tab <?= $tab==='mylogs'?'active':'' ?>">📋 My Activity</a>
+        <?php if (is_admin()): ?>
+          <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 All Mod Logs</a>
+          <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
+        <?php endif; ?>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <div class="stat-cards">
+        <div class="stat-card red">
+          <div class="stat-num"><?= $pending_reports ?></div>
+          <div class="stat-lbl">Pending Reports</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num"><?= $total_pets ?></div>
+          <div class="stat-lbl">Active Listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num"><?= $total_removed ?></div>
+          <div class="stat-lbl">Removed Posts</div>
+        </div>
+        <?php if (is_admin()): ?>
+        <div class="stat-card blue">
+          <div class="stat-num"><?= $total_users ?></div>
+          <div class="stat-lbl">Regular Users</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-num"><?= $total_mods ?></div>
+          <div class="stat-lbl">Moderators</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-num"><?= $total_banned ?></div>
+          <div class="stat-lbl">Banned Users</div>
+        </div>
+        <?php endif; ?>
+      </div>
 
-  <!-- Tabs -->
-  <div class="admin-tabs">
-    <a href="?tab=reports" class="admin-tab <?= $tab==='reports'?'active':'' ?>">
-      🚩 Reports <?php if($pending_reports>0): ?><span class="tab-badge"><?= $pending_reports ?></span><?php endif; ?>
-    </a>
-    <a href="?tab=pets"   class="admin-tab <?= $tab==='pets'?'active':'' ?>">🐾 All Pets</a>
-    <a href="?tab=mylogs" class="admin-tab <?= $tab==='mylogs'?'active':'' ?>">📋 My Activity</a>
-    <?php if (is_admin()): ?>
-      <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 All Mod Logs</a>
-      <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
-    <?php endif; ?>
-  </div>
-
-  <!-- ================================================ -->
   <!-- TAB: REPORTS                                     -->
   <!-- ================================================ -->
   <?php if ($tab === 'reports'): ?>
@@ -469,7 +470,8 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
       </table>
     </div>
   <?php endif; ?>
-
+    </main>
+  </div>
 </div>
 
 <script>

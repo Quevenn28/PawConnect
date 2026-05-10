@@ -31,7 +31,7 @@ class Pet {
      * Get all available pets with optional search/filter.
      * Only shows status='available' to public.
      */
-    public function getAvailable(string $species = '', string $query = '', string $breed = '', string $health_info = '', string $vaccinated = '', string $age_value = '', string $age_unit = '', string $sort = 'recent'): array {
+    public function getAvailable(string $species = '', string $query = '', string $breed = '', string $vaccinated = '', string $spayed_neutered = '', string $age_value = '', string $age_unit = '', string $sort = 'recent'): array {
         $where  = ["p.status = 'available'"];
         $params = [];
 
@@ -46,18 +46,19 @@ class Pet {
             $params[] = "%$query%";
             $params[] = "%$query%";
             $params[] = "%$query%";
+            $params[] = "%$query%";
         }
         if ($breed) {
             $where[]  = "p.breed LIKE ?";
             $params[] = "%$breed%";
         }
-        if ($health_info) {
-            $where[]  = "p.health_info LIKE ?";
-            $params[] = "%$health_info%";
-        }
         if ($vaccinated) {
             $where[]  = "p.vaccinated = ?";
             $params[] = $vaccinated;
+        }
+        if ($spayed_neutered) {
+            $where[]  = "p.spayed_neutered = ?";
+            $params[] = $spayed_neutered;
         }
         if ($age_value && $age_unit) {
             $age_unit = strtolower($age_unit);

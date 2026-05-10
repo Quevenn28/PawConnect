@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($pet['age'])) {
       <div class="form-section">Photo</div>
       <div class="form-group">
         <div class="file-upload">
-          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="previewPhoto(this)">
+          <input type="file" name="photo" id="photoInput" accept="image/*">
           <label for="photoInput" class="file-upload-btn">📷 Choose New Photo</label>
           <span class="file-name" id="fileName">No file chosen</span>
         </div>
@@ -139,31 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($pet['age'])) {
   </div>
 </div>
 
-<script>
-function previewPhoto(input) {
-    const file = input.files[0];
-    document.getElementById('fileName').textContent = file ? file.name : 'No file chosen';
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            let img = document.getElementById('previewImg');
-            if (!img) {
-                const preview = document.createElement('div');
-                preview.className = 'photo-preview';
-                preview.style.marginTop = '10px';
-                img = document.createElement('img');
-                img.id = 'previewImg';
-                img.style.maxWidth = '200px';
-                img.style.borderRadius = '8px';
-                preview.appendChild(img);
-                document.querySelector('.form-group').appendChild(preview);
-            }
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-</script>
+<script src="/assets/js/pets.js"></script>
 
 <?php footer_bar(); ?>
 </body>

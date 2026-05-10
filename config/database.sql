@@ -2,6 +2,7 @@
 --  PAWCONNECT - Complete Database
 --  Run this in phpMyAdmin before using the system
 -- ============================================================
+-- drop database pawconnectDB;
 
 CREATE DATABASE IF NOT EXISTS pawconnectDB;
 USE pawconnectDB;
@@ -18,6 +19,7 @@ CREATE TABLE users (
   phone         VARCHAR(30),
   facebook      VARCHAR(200),
   address       VARCHAR(200),
+  birthdate     DATE          NOT NULL,
   profile_photo VARCHAR(200),
   role          ENUM('user','moderator','admin') DEFAULT 'user',
   points        INT           DEFAULT 5,
@@ -25,8 +27,6 @@ CREATE TABLE users (
   is_banned     TINYINT       DEFAULT 0,
   ban_reason    TEXT,
   ban_until     DATETIME      NULL,             -- NULL = permanent ban
-  password_reset_token VARCHAR(255) NULL,       -- For password recovery
-  password_reset_expires DATETIME NULL,         -- Token expiration (24 hours)
   created_at    DATETIME      DEFAULT NOW()
 );
 
@@ -43,7 +43,6 @@ CREATE TABLE pets (
   gender              VARCHAR(20)  DEFAULT 'Unknown',
   description         TEXT,
   health_info         TEXT,
-  vaccinated          ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
   spayed_neutered     ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
   good_with_children  ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
   photo               VARCHAR(200),
@@ -136,41 +135,22 @@ CREATE TABLE point_logs (
 );
 
 -- ============================================================
---  NOTIFICATIONS TABLE
--- ============================================================
-CREATE TABLE notifications (
-  id         INT AUTO_INCREMENT PRIMARY KEY,
-  user_id    INT          NOT NULL,
-  message    VARCHAR(255) NOT NULL,
-  link       VARCHAR(255) NULL,
-  is_read    TINYINT      DEFAULT 0,
-  created_at DATETIME     DEFAULT NOW(),
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- ============================================================
 --  DEFAULT ADMIN ACCOUNT
 --  Username: admin | Password: admin123
 --  CHANGE THIS PASSWORD IMMEDIATELY AFTER SETUP
 -- ============================================================
-INSERT INTO users (full_name, username, email, password, role, points)
+INSERT INTO users (full_name, username, email, password, birthdate, role, points)
 VALUES (
   'System Administrator',
   'admin',
   'admin@pawconnect.com',
   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- password
+  '2000-01-01',
   'admin',
   999
 );
 
-ALTER TABLE users
-ADD COLUMN is_banned  TINYINT  DEFAULT 0,
-ADD COLUMN ban_reason TEXT,
-ADD COLUMN ban_until  DATETIME NULL;
 
--- ============================================================
---  PETS TABLE UPDATES (for existing databases)
--- ============================================================
 ALTER TABLE pets ADD COLUMN health_info TEXT;
 ALTER TABLE pets ADD COLUMN spayed_neutered ENUM('Yes','No','Unknown') DEFAULT 'Unknown';
 ALTER TABLE pets ADD COLUMN good_with_children ENUM('Yes','No','Unknown') DEFAULT 'Unknown';

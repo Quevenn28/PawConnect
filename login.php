@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <a href="index.php" class="nav-logo"><span>🐾</span> PawConnect</a>
   <div class="nav-links">
     <a href="index.php">← Home</a>
-    <a href="register.php" class="btn btn-primary btn-sm">Join Free</a>
+    <a href="register.php" class="btn btn-primary btn-sm">Register</a>
   </div>
 </nav>
 
@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn btn-primary w-full">Sign In 🐾</button>
 
       <div class="form-footer">
-        No account yet? <a href="register.php">Create one free</a>
+        No account yet? <a href="register.php">Create here</a>
       </div>
     </form>
 

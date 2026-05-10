@@ -21,7 +21,7 @@ function navbar($pdo) {
     }
     ?>
     <nav class="navbar">
-      <a href="<?= is_logged_in() ? (is_moderator() ? 'views/admin/dashboard.php' : 'views/users/index.php') : 'index.php' ?>" class="nav-logo">
+      <a href="/index.php" class="nav-logo">
         <span>🐾</span> PawConnect
       </a>
       <div class="nav-links">
@@ -39,7 +39,7 @@ function navbar($pdo) {
           <a href="/logout.php" class="btn btn-gray btn-sm">Logout</a>
         <?php else: ?>
           <a href="/login.php">Login</a>
-          <a href="/register.php" class="btn btn-primary btn-sm">Join Free</a>
+          <a href="/register.php" class="btn btn-primary btn-sm">Sign Up</a>
         <?php endif; ?>
       </div>
     </nav>

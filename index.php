@@ -26,7 +26,7 @@ $recent_pets = array_slice($recent_pets, 0, 6);
   <p>PawConnect connects pets in need with caring families. Browse, connect, and give a pet a forever home.</p>
   <div class="hero-btns">
     <a href="views/pets/index.php" class="btn btn-primary">🐾 Browse Pets</a>
-    <a href="<?= is_logged_in() ? 'views/pets/create.php' : 'register.php' ?>" class="btn btn-outline">List a Pet Free</a>
+    <a href="<?= is_logged_in() ? 'views/pets/create.php' : 'register.php' ?>" class="btn btn-outline">List a Pet</a>
   </div>
   <div class="hero-stats">
     <div class="stat"><strong><?= $total_pets ?></strong><span>Pets Available</span></div>
@@ -83,7 +83,7 @@ $recent_pets = array_slice($recent_pets, 0, 6);
   <h2>Have a pet that needs a home?</h2>
   <p>List them for free and connect with caring adopters.</p>
   <a href="<?= is_logged_in() ? 'views/pets/create.php' : 'register.php' ?>" class="btn-white">
-    🐾 <?= is_logged_in() ? 'Add a Pet' : 'Get Started Free' ?>
+    🐾 <?= is_logged_in() ? 'Add a Pet' : 'Get Started' ?>
   </a>
 </div>
 

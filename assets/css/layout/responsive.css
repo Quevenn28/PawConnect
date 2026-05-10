@@ -1,0 +1,105 @@
+/* ============================================================
+   RESPONSIVE STYLES
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        height: auto;
+        gap: 12px;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .hero h1 { font-size: 32px; }
+    .hero-stats { gap: 20px; }
+    .pet-detail-grid { grid-template-columns: 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .admin-wrap, .dashboard-wrap, .browse-wrap { 
+        margin-left: 0; 
+        padding-left: 16px; 
+        padding-right: 16px; 
+    }
+    .filter-box { position: static; }
+    .form-row { grid-template-columns: 1fr; }
+    .attrs-grid { grid-template-columns: 1fr; }
+    .hero { padding: 50px 20px; }
+    .section { padding: 40px 0; }
+    .footer-links { flex-direction: column; gap: 10px; }
+    
+    /* Sidebar mobile specific - using left positioning */
+    .sidebar-wrapper {
+        position: fixed;
+        top: 64px;
+        left: -280px;
+        width: 280px !important;
+        height: calc(100vh - 64px);
+        background: var(--white);
+        z-index: 999;
+        box-shadow: var(--shadow-md);
+        transition: left 0.3s ease;
+    }
+    
+    /* When collapsed class is present (hidden) - keep off-screen */
+    .sidebar-wrapper.collapsed {
+        left: -280px !important;
+    }
+    
+    /* When collapsed class is removed (visible) - slide to 0 */
+    .sidebar-wrapper:not(.collapsed) {
+        left: 0 !important;
+    }
+    
+    .main-content-wrapper {
+        width: 100% !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+    
+    /* Hide close button when sidebar is collapsed on mobile */
+    .sidebar-wrapper.collapsed .sidebar-close-btn {
+        display: none;
+    }
+    
+    /* Show open button when sidebar is collapsed on mobile */
+    .sidebar-wrapper.collapsed ~ .main-content-wrapper .content-open-btn {
+        display: inline-flex !important;
+    }
+    
+    /* Hide open button when sidebar is visible on mobile */
+    .sidebar-wrapper:not(.collapsed) ~ .main-content-wrapper .content-open-btn {
+        display: none !important;
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 64px);
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
+    }
+    
+    /* Adjust button sizes for mobile */
+    .content-open-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+    
+    .sidebar-close-btn {
+        top: 16px;
+        right: 16px;
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+}

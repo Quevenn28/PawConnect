@@ -103,7 +103,7 @@ require_once '../../controllers/pets/create.php';
       <div class="form-section">Photo</div>
       <div class="form-group">
         <div class="file-upload">
-          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="previewPhoto(this)" required>
+          <input type="file" name="photo" id="photoInput" accept="image/*" required>
           <label for="photoInput" class="file-upload-btn">📷 Choose Photo</label>
           <span class="file-name" id="fileName">No file chosen</span>
         </div>
@@ -124,20 +124,7 @@ require_once '../../controllers/pets/create.php';
   </div>
 </div>
 
-<script>
-function previewPhoto(input) {
-    const file = input.files[0];
-    document.getElementById('fileName').textContent = file ? file.name : 'No file chosen';
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('previewImg').src = e.target.result;
-            document.getElementById('photoPreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-}
-</script>
+<script src="/assets/js/pets.js"></script>
 
 <?php footer_bar(); ?>
 </body>

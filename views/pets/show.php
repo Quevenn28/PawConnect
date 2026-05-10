@@ -17,11 +17,48 @@ $reqObj           = new AdoptionRequest($pdo);
 $already_requested = false;
 $already_reported  = false;
 
+// Get adopter info if pet is adopted
+$adopter_info = null;
+if ($pet['status'] === 'adopted') {
+    $stmt = $pdo->prepare("
+        SELECT a.*, u.full_name, u.username, u.profile_photo
+        FROM adoptions a
+        JOIN users u ON u.id = a.adopter_id
+        WHERE a.pet_id = ?
+        ORDER BY a.adopted_at DESC LIMIT 1
+    ");
+    $stmt->execute([$id]);
+    $adopter_info = $stmt->fetch();
+}
+
 if (is_logged_in()) {
     $already_requested = $reqObj->hasRequested($id, $_SESSION['user_id']);
     $reportObj         = new Report($pdo);
     $already_reported  = $reportObj->hasReported($id, $_SESSION['user_id']);
 }
+
+// Determine back URL based on referrer
+$back_url = 'javascript:history.back()';
+if (isset($_SERVER['HTTP_REFERER'])) {
+    $referer = $_SERVER['HTTP_REFERER'];
+    
+    if (strpos($referer, '/views/users/index.php') !== false) {
+        if (strpos($referer, 'section=') !== false) {
+            $back_url = $referer;
+        } else {
+            $back_url = '/views/users/index.php?section=pets';
+        }
+    }
+    elseif (strpos($referer, '/views/pets/index.php') !== false) {
+        $back_url = $referer;
+    }
+    elseif (strpos($referer, '/views/admin/dashboard.php') !== false) {
+        $back_url = $referer;
+    }
+}
+
+// Check if current user is the pet owner (rehomer)
+$is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +74,7 @@ if (is_logged_in()) {
 <div class="pet-detail-wrap">
 
   <?php if (isset($_GET['requested'])): ?>
-    <div class="alert alert-success">✓ Your adoption request has been sent! The owner will contact you soon. 🐾</div>
+    <div class="alert alert-success">✓ Your adoption request has been sent! The rehomer will contact you soon. 🐾</div>
   <?php endif; ?>
   <?php if (isset($_GET['reported'])): ?>
     <div class="alert alert-success">✓ Report submitted. Our moderators will review it shortly.</div>
@@ -46,14 +83,19 @@ if (is_logged_in()) {
     <div class="alert alert-error"><?= htmlspecialchars($_GET['error']) ?></div>
   <?php endif; ?>
 
-  <div style="margin-bottom:20px;">
-    <a href="javascript:history.back()" class="btn btn-outline btn-sm">← Back</a>
-    <a href="index.php" class="btn btn-gray btn-sm" style="margin-left:10px;">Browse Pets</a>
+  <div style="margin-bottom:20px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <a href="<?= $back_url ?>" class="btn btn-outline btn-sm" id="backButton">← Back</a>
+      <a href="index.php" class="btn btn-gray btn-sm" style="margin-left:10px;">Browse Pets</a>
+    </div>
+    <?php if ($is_owner && $pet['status'] === 'available'): ?>
+      <a href="edit.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-primary btn-sm">✏️ Edit Pet Listing</a>
+    <?php endif; ?>
   </div>
 
   <?php if ($pet['status'] === 'removed' && is_moderator()): ?>
     <div class="alert" style="background:#1f2937;color:#f9fafb;border:2px solid var(--red)">
-      🚫 This listing has been removed and is only visible to moderators/admins.
+      🚫 This listing has been removed.
     </div>
   <?php endif; ?>
 
@@ -94,63 +136,98 @@ if (is_logged_in()) {
       </div>
       <?php endif; ?>
 
-      <!-- Owner card -->
+      <!-- Rehomer Card - Address and contact info only if pet is available -->
       <div class="owner-card">
         <div class="owner-card-top">
           <div class="owner-av"><?= strtoupper(substr($pet['full_name'],0,1)) ?></div>
           <div class="owner-av-name">
             <strong><?= htmlspecialchars($pet['full_name']) ?></strong>
-            <span>Pet Owner<?= $pet['address'] ? ' · '.$pet['address'] : '' ?></span>
+            <span>🐾 Rehomer<?= ($pet['status'] === 'available' && $pet['address']) ? ' · '.$pet['address'] : '' ?></span>
           </div>
         </div>
-        <div class="contact-chips">
-          <?php if ($pet['phone']): ?><a href="tel:<?= htmlspecialchars($pet['phone']) ?>" class="chip">📞 <?= htmlspecialchars($pet['phone']) ?></a><?php endif; ?>
-          <?php if ($pet['email']): ?><a href="mailto:<?= htmlspecialchars($pet['email']) ?>" class="chip">✉️ Email</a><?php endif; ?>
-          <?php if ($pet['facebook']): ?><a href="<?= htmlspecialchars($pet['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
-        </div>
+        
+        <?php if ($pet['status'] === 'available'): ?>
+          <div class="contact-chips">
+            <?php if ($pet['phone']): ?><a href="tel:<?= htmlspecialchars($pet['phone']) ?>" class="chip">📞 <?= htmlspecialchars($pet['phone']) ?></a><?php endif; ?>
+            <?php if ($pet['email']): ?><a href="mailto:<?= htmlspecialchars($pet['email']) ?>" class="chip">✉️ Email</a><?php endif; ?>
+            <?php if ($pet['facebook']): ?><a href="<?= htmlspecialchars($pet['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
+          </div>
+        <?php endif; ?>
       </div>
 
-      <!-- Adopt section -->
-      <?php if (is_logged_in() && $_SESSION['user_id'] != $pet['user_id'] && $pet['status'] === 'available'): ?>
-        <?php if ($already_requested): ?>
-          <div class="alert alert-info">You already sent an adoption request for <?= htmlspecialchars($pet['name']) ?>.</div>
-        <?php else: ?>
-        <div class="adopt-form">
-          <h3>🐾 Request Adoption</h3>
-          <form method="POST" action="../../controllers/requests/create.php">
-            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-            <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-            <div class="form-group">
-              <label>Message to Owner (optional)</label>
-              <textarea name="message" rows="3" placeholder="Tell the owner why you'd be a great match…"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-full">Send Adoption Request 🐾</button>
-          </form>
-        </div>
-        <?php endif; ?>
-      <?php elseif (!is_logged_in()): ?>
-        <div class="login-prompt">
-          <p>Want to adopt <?= htmlspecialchars($pet['name']) ?>?</p>
-          <div style="display:flex;gap:10px;justify-content:center">
-            <a href="../../login.php" class="btn btn-primary">Sign In</a>
-            <a href="../../register.php" class="btn btn-outline">Create Account</a>
+      <!-- Adopter Card - Only show if pet is adopted -->
+      <?php if ($pet['status'] === 'adopted' && $adopter_info): ?>
+      <div class="owner-card" style="background:var(--green-lt);border-color:var(--green);">
+        <div class="owner-card-top">
+          <div class="owner-av" style="background:var(--green);">
+            <?php if (!empty($adopter_info['profile_photo'])): ?>
+              <img src="../../uploads/users/<?= htmlspecialchars($adopter_info['profile_photo']) ?>" alt="" style="width:100%;height:100%;object-fit:cover">
+            <?php else: ?>
+              <?= strtoupper(substr($adopter_info['full_name'],0,1)) ?>
+            <?php endif; ?>
           </div>
+          <div class="owner-av-name">
+            <strong><?= htmlspecialchars($adopter_info['full_name']) ?></strong>
+            <span>🏠 Adopter</span>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--gray-3);margin-top:4px">
+          ✓ Adopted on <?= date('F j, Y', strtotime($adopter_info['adopted_at'])) ?>
+        </div>
+      </div>
+      <?php endif; ?>
+
+      <!-- Adopt section - Only show if pet is available -->
+      <?php if ($pet['status'] === 'available'): ?>
+        <?php if (is_logged_in() && $_SESSION['user_id'] != $pet['user_id']): ?>
+          <?php if ($already_requested): ?>
+            <div class="alert alert-info">You already sent an adoption request for <?= htmlspecialchars($pet['name']) ?>.</div>
+          <?php else: ?>
+          <div class="adopt-form">
+            <h3>🐾 Request Adoption</h3>
+            <form method="POST" action="../../controllers/requests/create.php">
+              <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+              <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
+              <div class="form-group">
+                <label>Message to Rehomer (optional)</label>
+                <textarea name="message" rows="3" placeholder="Tell the rehomer why you'd be a great match…"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">Send Adoption Request 🐾</button>
+            </form>
+          </div>
+          <?php endif; ?>
+        <?php elseif (!is_logged_in()): ?>
+          <div class="login-prompt">
+            <p>Want to adopt <?= htmlspecialchars($pet['name']) ?>?</p>
+            <div style="display:flex;gap:10px;justify-content:center">
+              <a href="../../login.php" class="btn btn-primary">Sign In</a>
+              <a href="../../register.php" class="btn btn-outline">Create Account</a>
+            </div>
+          </div>
+        <?php endif; ?>
+      <?php else: ?>
+        <div class="alert alert-info" style="text-align:center;background:var(--gray-6);border-color:var(--gray-5)">
+          <?php if ($pet['status'] === 'adopted'): ?>
+            🏠 This pet has been adopted.
+          <?php else: ?>
+            ⚠️ This pet listing is no longer available.
+          <?php endif; ?>
         </div>
       <?php endif; ?>
 
-      <!-- Report button -->
-      <?php if (is_logged_in() && $_SESSION['user_id'] != $pet['user_id'] && $pet['status'] === 'available'): ?>
+      <!-- Report button - Only show if pet is available and user is not the rehomer -->
+      <?php if ($pet['status'] === 'available' && is_logged_in() && $_SESSION['user_id'] != $pet['user_id']): ?>
         <div style="margin-top:16px;text-align:right">
           <?php if ($already_reported): ?>
             <span style="font-size:12px;color:var(--gray-4)">✓ You've already reported this listing.</span>
           <?php else: ?>
-            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing or owner</button>
+            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing or rehomer</button>
           <?php endif; ?>
         </div>
 
         <!-- Report form (hidden by default) -->
         <div id="reportForm" style="display:none;margin-top:12px;background:var(--gray-6);border:1px solid var(--gray-5);border-radius:var(--radius-lg);padding:16px">
-          <h4 style="margin-bottom:10px;font-size:14px">Report Listing or Owner</h4>
+          <h4 style="margin-bottom:10px;font-size:14px">Report Listing or Rehomer</h4>
           <form method="POST" action="../../controllers/reports/create.php">
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
@@ -179,10 +256,7 @@ if (is_logged_in()) {
   </div>
 </div>
 
-<script>
-function showReportForm() { document.getElementById('reportForm').style.display = 'block'; }
-function hideReportForm() { document.getElementById('reportForm').style.display = 'none'; }
-</script>
+<script src="/assets/js/pets.js"></script>
 
 <?php footer_bar(); ?>
 </body>

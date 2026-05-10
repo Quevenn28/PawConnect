@@ -1,0 +1,64 @@
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.navbar {
+    background: var(--white);
+    border-bottom: 2px solid var(--orange-mid);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--gray-1);
+}
+
+.nav-logo span {
+    font-size: 28px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-2);
+    transition: all 0.2s;
+}
+
+.nav-links a:hover {
+    background: var(--orange-lt);
+    color: var(--orange);
+}
+
+.btn-nav {
+    background: var(--orange) !important;
+    color: var(--white) !important;
+    border-radius: 8px !important;
+}
+
+.btn-nav:hover {
+    background: var(--orange-dk) !important;
+}

@@ -1,0 +1,40 @@
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lora', serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Lora:ital,wght@0,600;1,400&display=swap');
+
+.page-with-fixed-sidebar {
+    margin-left: 0;
+    width: 100%;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Lora', serif;
+    background: #fef9f5;
+    color: var(--gray-1);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main content wrappers flex to fill available space */
+.admin-wrap, .dashboard-wrap, .browse-wrap, .hero, .form-page, .pet-detail-wrap {
+    flex: 1 0 auto;
+    width: 100%;
+}

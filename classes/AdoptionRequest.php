@@ -23,17 +23,19 @@ class AdoptionRequest {
 
     /**
      * Get all PENDING requests for pets owned by a user.
+     * Includes requester's profile photo, username, and points for badges.
      */
     public function getPendingForOwner(int $owner_id): array {
         $stmt = $this->pdo->prepare("
             SELECT ar.*,
-                   u.full_name, u.phone, u.email AS req_email, u.facebook,
-                   p.name AS pet_name
+                u.full_name, u.phone, u.email AS req_email, u.facebook,
+                u.profile_photo, u.username, u.points, u.id as user_id,
+                p.name AS pet_name, p.id AS pet_id
             FROM adoption_requests ar
             JOIN users u ON u.id = ar.requester_id
             JOIN pets  p ON p.id = ar.pet_id
             WHERE p.user_id = ?
-              AND ar.status = 'pending'
+            AND ar.status = 'pending'
             ORDER BY ar.created_at DESC
         ");
         $stmt->execute([$owner_id]);

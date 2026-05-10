@@ -1,0 +1,96 @@
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+    display: inline-block;
+    padding: 11px 24px;
+    border-radius: var(--radius);
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--orange);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--orange-dk);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+}
+
+.btn-outline {
+    background: var(--white);
+    color: var(--orange);
+    border: 2px solid var(--orange);
+}
+
+.btn-outline:hover {
+    background: var(--orange-lt);
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+.btn-green {
+    background: var(--green);
+    color: var(--white);
+}
+
+.btn-green:hover {
+    background: #15803d;
+}
+
+.btn-red {
+    background: var(--red);
+    color: var(--white);
+}
+
+.btn-red:hover {
+    background: #b91c1c;
+}
+
+.btn-gray {
+    background: var(--gray-5);
+    color: var(--gray-2);
+}
+
+.btn-gray:hover {
+    background: #d1d5db;
+}
+
+.btn-blue {
+    background: var(--blue);
+    color: var(--white);
+}
+
+.btn-blue:hover {
+    background: #1d4ed8;
+}
+
+.btn-white {
+    background: white;
+    color: var(--orange);
+    font-weight: 800;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    display: inline-block;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}

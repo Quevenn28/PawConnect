@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone     = trim($_POST['phone']               ?? '');
     $facebook  = trim($_POST['facebook']            ?? '');
     $address   = trim($_POST['address']             ?? '');
+    $birthdate = trim($_POST['birthdate']           ?? '');
     $password  = $_POST['password']                 ?? '';
     $confirm   = $_POST['confirm']                  ?? '';
 
@@ -36,53 +37,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm) {
         $error = 'Passwords do not match.';
 
-    } elseif (strlen($password) < 8) {
-        $error = 'Password must be at least 8 characters.';
+    } elseif (strlen($password) < 6) {
+        $error = 'Password must be at least 6 characters.';
 
-    } elseif (!$phone && !$facebook) {
-        $error = 'Please provide at least a phone number or Facebook link so adopters can contact you.';
+    } elseif (!$phone) {
+        $error = 'Please provide your phone number so adopters can contact you.';
+
+    } elseif (!$facebook) {
+        $error = 'Please provide your Facebook profile link so adopters can contact you.';
 
     } elseif (!$address) {
         $error = 'Please provide your address or location.';
 
-    } elseif (!isset($_POST['agree_terms'])) {
-        $error = 'You must agree to the Terms & Conditions to continue.';
+    } elseif (!$birthdate) {
+        $error = 'Please provide your birthdate.';
+
+    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $birthdate)) {
+        $error = 'Please enter a valid birthdate in YYYY-MM-DD format.';
 
     } else {
-        $userObj = new User($pdo);
+        try {
+            $dob = new DateTime($birthdate);
+            $today = new DateTime('today');
+        } catch (Exception $e) {
+            $dob = null;
+        }
 
-        // Check if email or username belongs to a permanently banned account
-        if ($userObj->isBannedCredential($email, $username)) {
-            $error = 'This email or username is not available for registration.';
+        if (!$dob) {
+            $error = 'Please enter a valid birthdate.';
 
-        // Check if email or username already exists
-        } elseif ($userObj->emailOrUsernameExists($email, $username)) {
-            $error = 'That email or username is already taken. Please choose another.';
+        } elseif ($dob > new DateTime('today')) {
+            $error = 'Birthdate cannot be in the future.';
+
+        } elseif ($dob->diff($today)->y < 18) {
+            $error = 'You must be 18 years or older to register.';
+
+        } elseif (!isset($_POST['agree_terms'])) {
+            $error = 'You must agree to the Terms & Conditions to continue.';
 
         } else {
-            // --- CREATE ACCOUNT ---
-            $user_id = $userObj->create(
-                $full_name, $username, $email,
-                $password, $phone, $facebook, $address
-            );
+            $userObj = new User($pdo);
 
-            // Log the welcome points
-            award_points(
-                $pdo,
-                $user_id,
-                PTS_REGISTER,
-                'Welcome bonus — account created',
-                'general'
-            );
+            // Check if email or username belongs to a permanently banned account
+            if ($userObj->isBannedCredential($email, $username)) {
+                $error = 'This email or username is not available for registration.';
 
-            // --- AUTO LOGIN ---
-            session_regenerate_id(true);
-            $_SESSION['user_id']   = $user_id;
-            $_SESSION['user_name'] = $full_name;
-            $_SESSION['username']  = $username;
-            $_SESSION['role']      = 'user';
+            // Check if email or username already exists
+            } elseif ($userObj->emailOrUsernameExists($email, $username)) {
+                $error = 'That email or username is already taken. Please choose another.';
 
-            $success = true;
+            } else {
+                // --- CREATE ACCOUNT ---
+                $user_id = $userObj->create(
+                    $full_name, $username, $email,
+                    $password, $phone, $facebook, $address,
+                    $birthdate
+                );
+
+                // Log the welcome points
+                award_points(
+                    $pdo,
+                    $user_id,
+                    PTS_REGISTER,
+                    'Welcome bonus — account created',
+                    'general'
+                );
+
+                // --- AUTO LOGIN ---
+                session_regenerate_id(true);
+                $_SESSION['user_id']   = $user_id;
+                $_SESSION['user_name'] = $full_name;
+                $_SESSION['username']  = $username;
+                $_SESSION['role']      = 'user';
+
+                $success = true;
+            }
         }
     }
 }

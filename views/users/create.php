@@ -32,6 +32,8 @@
 
     <form method="POST" id="registerForm">
       <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+      <?php $maxBirthdate = date('Y-m-d', strtotime('-18 years')); ?>
+
 
       <!-- Personal Info -->
       <div class="form-section">Personal Info</div>
@@ -53,7 +55,20 @@
             value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
             required
           >
-          <small>Letters, numbers, underscores only</small>
+          <small class="text-muted">Letters, numbers, underscores only</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Birthdate <span class="req">*</span></label>
+          <input
+            type="date" name="birthdate"
+            max="<?= $maxBirthdate ?>"
+            value="<?= htmlspecialchars($_POST['birthdate'] ?? '') ?>"
+            required
+          >
+          <small class="text-muted">You must be 18 years or older to register.</small>
         </div>
       </div>
 
@@ -71,7 +86,7 @@
         <div class="form-group">
           <label>Password <span class="req">*</span></label>
           <div class="password-wrap">
-            <input type="password" name="password" id="pw1" placeholder="Min. 8 characters" required>
+            <input type="password" name="password" id="pw1" placeholder="Min. 6 characters" required>
             <button type="button" class="toggle-pw" onclick="togglePw('pw1')">👁️</button>
           </div>
         </div>
@@ -87,7 +102,7 @@
       <!-- Contact Info -->
       <div class="form-section">
         Contact Info
-        <span class="form-section-note">(at least one required — so adopters can reach you)</span>
+        <span class="form-section-note">(All required — so adopters can reach you)</span>
       </div>
 
       <div class="form-row">
@@ -97,6 +112,7 @@
             type="tel" name="phone"
             placeholder="+63 9XX XXX XXXX"
             value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
+            required
           >
         </div>
         <div class="form-group">
@@ -105,6 +121,7 @@
             type="url" name="facebook"
             placeholder="https://facebook.com/yourname"
             value="<?= htmlspecialchars($_POST['facebook'] ?? '') ?>"
+            required
           >
         </div>
       </div>
@@ -129,10 +146,6 @@
           <input type="checkbox" name="agree_terms" value="1" required>
           I agree to the <a href="terms.php" target="_blank">Terms & Conditions</a> and <a href="terms.php#privacy" target="_blank">Privacy Policy</a>.
         </label>
-      </div>
-
-      <div style="margin-top:8px;font-size:12px;color:var(--gray-4)">
-        <span class="req">*</span> Required fields. At least one of Phone or Facebook is required.
       </div>
 
       <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">

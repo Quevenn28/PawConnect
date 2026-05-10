@@ -1,0 +1,130 @@
+/* ============================================================
+   COLLAPSIBLE SIDEBAR
+   ============================================================ */
+
+/* Sidebar wrapper - consistent width */
+.sidebar-wrapper {
+    transition: all 0.3s ease;
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* Sidebar wrapper - collapsed state (hidden) - DESKTOP ONLY */
+@media (min-width: 769px) {
+    .sidebar-wrapper.collapsed {
+        width: 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+}
+
+/* Sidebar itself - needs relative positioning for the close button */
+.sidebar-wrapper .dashboard-sidebar,
+.sidebar-wrapper .admin-sidebar,
+.sidebar-wrapper .browse-sidebar {
+    position: relative;
+    height: 100%;
+}
+
+/* Close button (✕) inside sidebar - top right corner */
+.sidebar-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    color: var(--orange);
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    z-index: 10;
+}
+
+.sidebar-close-btn:hover {
+    color: var(--orange-dk);
+    background: rgba(249, 115, 22, 0.1);
+    transform: scale(1.05);
+}
+
+/* Open button (☰) inside main content area */
+.content-open-btn {
+    background: transparent;
+    color: var(--orange);
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.content-open-btn:hover {
+    color: var(--orange-dk);
+    background: rgba(249, 115, 22, 0.1);
+    transform: scale(1.05);
+}
+
+/* Button wrapper for main content - holds the open button and content together */
+.content-header-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Main content wrapper - expands to fill remaining space */
+.main-content-wrapper {
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 0;
+    padding-right: 24px;
+}
+
+/* When sidebar is visible, content has no left padding */
+.sidebar-wrapper:not(.collapsed) ~ .main-content-wrapper {
+    padding-left: 0;
+}
+
+/* When sidebar is hidden, content gets left padding */
+.sidebar-wrapper.collapsed ~ .main-content-wrapper {
+    padding-left: 24px;
+}
+
+/* Hide close button when sidebar is collapsed */
+.sidebar-wrapper.collapsed .sidebar-close-btn {
+    display: none;
+}
+
+/* Hide open button when sidebar is visible */
+.sidebar-wrapper:not(.collapsed) ~ .main-content-wrapper .content-open-btn {
+    display: none;
+}
+
+/* Show open button when sidebar is collapsed */
+.sidebar-wrapper.collapsed ~ .main-content-wrapper .content-open-btn {
+    display: inline-flex;
+}
+
+/* Overlay - hidden on desktop */
+.sidebar-overlay {
+    display: none;
+}
+
+/* For desktop */
+@media (min-width: 769px) {
+    .sidebar-wrapper {
+        display: block;
+    }
+}

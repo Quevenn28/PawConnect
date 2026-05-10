@@ -94,17 +94,18 @@ class User {
         string $password,
         string $phone,
         string $facebook,
-        string $address
+        string $address,
+        string $birthdate
     ): int {
         $hashed = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->pdo->prepare("
             INSERT INTO users
-                (full_name, username, email, password, phone, facebook, address, role, points)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'user', ?)
+                (full_name, username, email, password, phone, facebook, address, birthdate, role, points)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
         ");
         $stmt->execute([
             $full_name, $username, $email, $hashed,
-            $phone, $facebook, $address, 0
+            $phone, $facebook, $address, $birthdate, 0
         ]);
         return (int) $this->pdo->lastInsertId();
     }

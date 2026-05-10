@@ -1,0 +1,66 @@
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+.text-center { text-align: center; }
+.text-orange { color: var(--orange); }
+.text-green  { color: var(--green); }
+.text-red    { color: var(--red); }
+.text-gray   { color: var(--gray-3); }
+.mt-4  { margin-top: 16px; }
+.mb-4  { margin-bottom: 16px; }
+.mb-6  { margin-bottom: 24px; }
+.w-full { width: 100%; }
+.gap-2  { gap: 8px; }
+.flex   { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-3);
+}
+
+.empty-state .empty-icon {
+    font-size: 56px;
+    opacity: 0.4;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 15px;
+}
+
+/* Data table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--gray-6);
+    color: var(--gray-2);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gray-5);
+}
+
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--gray-5);
+    vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover td {
+    background: var(--gray-6);
+}

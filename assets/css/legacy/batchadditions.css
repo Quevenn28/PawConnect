@@ -1,0 +1,75 @@
+/* ============================================================
+   BATCH ADDITIONS (Points, Titles, Badges)
+   ============================================================ */
+
+/* Points & Titles */
+.profile-points-bar {
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
+    border: 1px solid var(--orange-mid);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin: 12px 0;
+    text-align: center;
+}
+
+.profile-points-bar .pts-score {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--orange);
+    line-height: 1;
+}
+
+.profile-points-bar .pts-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-4);
+    margin-bottom: 10px;
+}
+
+.titles-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid;
+}
+
+.title-badge.rehomer {
+    background: #fff7ed;
+    border-color: var(--orange-mid);
+    color: var(--orange-dk);
+}
+
+.title-badge.adopter {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.title-badge.moderator {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+    color: #6d28d9;
+}
+
+/* Form section note */
+.form-section-note {
+    font-size: 11px;
+    color: var(--gray-4);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 6px;
+}

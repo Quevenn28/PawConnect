@@ -4,6 +4,46 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    // ============================================================
+    // SIDEBAR TOGGLE BUTTONS (Same as dashboard.js)
+    // ============================================================
+    
+    const sidebar = document.querySelector('.sidebar-wrapper');
+    const closeBtn = document.getElementById('closeSidebarBtn');
+    const openBtn = document.getElementById('openSidebarBtn');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (sidebar) {
+                sidebar.classList.add('collapsed');
+                // On mobile, also hide overlay
+                if (window.innerWidth <= 768) {
+                    const overlay = document.querySelector('.sidebar-overlay');
+                    if (overlay) overlay.classList.remove('active');
+                }
+            }
+        });
+    }
+    
+    if (openBtn) {
+        openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (sidebar) {
+                sidebar.classList.remove('collapsed');
+                // On mobile, show overlay
+                if (window.innerWidth <= 768) {
+                    const overlay = document.querySelector('.sidebar-overlay');
+                    if (overlay) overlay.classList.add('active');
+                }
+            }
+        });
+    }
+    
+    // ============================================================
+    // CONFIRMATION HANDLERS
+    // ============================================================
+    
     // Remove post confirmation
     document.querySelectorAll('.remove-btn').forEach(btn => {
         btn.closest('form').addEventListener('submit', e => {

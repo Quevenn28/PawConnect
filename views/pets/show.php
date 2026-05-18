@@ -227,7 +227,7 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 
         <!-- Report form (hidden by default) -->
         <div id="reportForm" style="display:none;margin-top:12px;background:var(--gray-6);border:1px solid var(--gray-5);border-radius:var(--radius-lg);padding:16px">
-          <h4 style="margin-bottom:10px;font-size:14px">Report Listing or Rehomer</h4>
+          <h4 style="margin-bottom:10px;font-size:14px">Report Listing</h4>
           <form method="POST" action="../../controllers/reports/create.php">
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">

@@ -154,3 +154,16 @@ VALUES (
 ALTER TABLE pets ADD COLUMN health_info TEXT;
 ALTER TABLE pets ADD COLUMN spayed_neutered ENUM('Yes','No','Unknown') DEFAULT 'Unknown';
 ALTER TABLE pets ADD COLUMN good_with_children ENUM('Yes','No','Unknown') DEFAULT 'Unknown';
+
+-- Backup logs table to track backup history
+CREATE TABLE IF NOT EXISTS backup_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    filepath VARCHAR(500),
+    filesize INT DEFAULT 0,
+    action_type ENUM('backup', 'restore') DEFAULT 'backup',
+    created_by INT NOT NULL,
+    created_at DATETIME DEFAULT NOW(),
+    deleted_at DATETIME NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);

@@ -59,6 +59,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
             <?php if (is_admin()): ?>
               <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 All Mod Logs</a>
               <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
+              <a href="backup.php" class="admin-tab">💾 Backup & Restore</a>
             <?php endif; ?>
           </div>
         </aside>

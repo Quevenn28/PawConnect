@@ -1,24 +1,23 @@
 -- ============================================================
---  PAWCONNECT - Complete Database with UTF-8 Support
---  Run this in phpMyAdmin or MySQL Workbench before using the system
+--  PAWCONNECT - Complete Database
+--  Run this in phpMyAdmin or MySQL Workbench
 -- ============================================================
 
 -- Drop database if exists (uncomment if needed)
 -- DROP DATABASE IF EXISTS pawconnectDB;
 
--- Create database with UTF-8 character set
-CREATE DATABASE IF NOT EXISTS pawconnectDB;
--- CHARACTER SET = utf8mb4
--- COLLATE = utf8mb4_unicode_ci;
+-- Create database
+CREATE DATABASE IF NOT EXISTS pawconnectDB
+CHARACTER SET  latin1
+COLLATE  latin1_swedish_ci;
 
+-- Use the database
 USE pawconnectDB;
 
-SET NAMES utf8mb4;
-SET CHARACTER SET utf8mb4;
 -- ============================================================
 --  USERS TABLE
 -- ============================================================
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   full_name     VARCHAR(100)  NOT NULL,
   username      VARCHAR(60)   NOT NULL UNIQUE,
@@ -36,12 +35,12 @@ CREATE TABLE users (
   ban_reason    TEXT,
   ban_until     DATETIME      NULL,
   created_at    DATETIME      DEFAULT NOW()
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  PETS TABLE
 -- ============================================================
-CREATE TABLE pets (
+CREATE TABLE IF NOT EXISTS pets (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   user_id     INT          NOT NULL,
   name        VARCHAR(100) NOT NULL,
@@ -59,12 +58,12 @@ CREATE TABLE pets (
   removed_at  DATETIME     NULL,
   created_at  DATETIME     DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  ADOPTION REQUESTS TABLE
 -- ============================================================
-CREATE TABLE adoption_requests (
+CREATE TABLE IF NOT EXISTS adoption_requests (
   id           INT AUTO_INCREMENT PRIMARY KEY,
   pet_id       INT         NOT NULL,
   requester_id INT         NOT NULL,
@@ -75,12 +74,12 @@ CREATE TABLE adoption_requests (
   UNIQUE KEY unique_req (pet_id, requester_id),
   FOREIGN KEY (pet_id)       REFERENCES pets(id),
   FOREIGN KEY (requester_id) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  ADOPTIONS LOG TABLE
 -- ============================================================
-CREATE TABLE adoptions (
+CREATE TABLE IF NOT EXISTS adoptions (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   pet_id        INT          NOT NULL,
   pet_name      VARCHAR(100),
@@ -93,12 +92,12 @@ CREATE TABLE adoptions (
   owner_email   VARCHAR(150),
   owner_phone   VARCHAR(30),
   adopted_at    DATETIME     DEFAULT NOW()
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  REPORTS TABLE
 -- ============================================================
-CREATE TABLE reports (
+CREATE TABLE IF NOT EXISTS reports (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   pet_id      INT         NOT NULL,
   reporter_id INT         NOT NULL,
@@ -110,12 +109,12 @@ CREATE TABLE reports (
   created_at  DATETIME    DEFAULT NOW(),
   FOREIGN KEY (pet_id)      REFERENCES pets(id),
   FOREIGN KEY (reporter_id) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  MODERATOR LOGS TABLE
 -- ============================================================
-CREATE TABLE mod_logs (
+CREATE TABLE IF NOT EXISTS mod_logs (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   mod_id      INT          NOT NULL,
   action      VARCHAR(50)  NOT NULL,
@@ -127,12 +126,12 @@ CREATE TABLE mod_logs (
   undone_at   DATETIME     NULL,
   created_at  DATETIME     DEFAULT NOW(),
   FOREIGN KEY (mod_id) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  POINT LOGS TABLE
 -- ============================================================
-CREATE TABLE point_logs (
+CREATE TABLE IF NOT EXISTS point_logs (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   user_id    INT          NOT NULL,
   points     INT          NOT NULL,
@@ -140,12 +139,12 @@ CREATE TABLE point_logs (
   reason     VARCHAR(150) NOT NULL,
   created_at DATETIME     DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  BACKUP LOGS TABLE
 -- ============================================================
-CREATE TABLE backup_logs (
+CREATE TABLE IF NOT EXISTS backup_logs (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   filename    VARCHAR(255) NOT NULL,
   filepath    VARCHAR(500),
@@ -155,14 +154,13 @@ CREATE TABLE backup_logs (
   created_at  DATETIME DEFAULT NOW(),
   deleted_at  DATETIME NULL,
   FOREIGN KEY (created_by) REFERENCES users(id)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================
 --  DEFAULT ADMIN ACCOUNT
 --  Username: admin | Password: admin123
---  CHANGE THIS PASSWORD IMMEDIATELY AFTER SETUP
 -- ============================================================
-INSERT INTO users (full_name, username, email, password, birthdate, role, points)
+INSERT IGNORE INTO users (full_name, username, email, password, birthdate, role, points)
 VALUES (
   'System Administrator',
   'admin',
@@ -171,4 +169,4 @@ VALUES (
   '2000-01-01',
   'admin',
   999
-) ON DUPLICATE KEY UPDATE id=id;
+);

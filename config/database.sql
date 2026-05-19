@@ -4,15 +4,15 @@
 -- ============================================================
 
 -- Drop database if exists (uncomment if needed)
--- DROP DATABASE IF EXISTS pawconnectDB;
+--  DROP DATABASE IF EXISTS pawconnectDB;
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS pawconnectDB
+CREATE DATABASE IF NOT EXISTS paw_connect_db
 CHARACTER SET  latin1
 COLLATE  latin1_swedish_ci;
 
 -- Use the database
-USE pawconnectDB;
+USE paw_connect_db;
 
 -- ============================================================
 --  USERS TABLE

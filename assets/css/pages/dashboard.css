@@ -114,9 +114,10 @@
 
 .sidebar-badges {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
     gap: 10px;
     margin: 14px 0 16px;
+    text-align: center;
 }
 
 .sidebar-summary {

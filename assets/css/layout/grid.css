@@ -88,6 +88,21 @@ body {
     flex: 1 !important;
 }
 
+.browse-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.browse-wrap > .container-fluid {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.browse-wrap > .container-fluid > .row {
+    flex: 1 !important;
+}
+
 .footer {
     margin-top: auto;
     flex-shrink: 0;

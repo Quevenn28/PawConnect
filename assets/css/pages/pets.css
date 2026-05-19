@@ -14,17 +14,19 @@
     flex-direction: column;
     gap: 20px;
     overflow-y: auto;
-    max-height: calc(100vh - var(--header-height) - var(--footer-height));
     padding: 24px 20px;
     background: var(--white);
     border: none;
     position: relative;
+    width: 100%;
+    flex-basis: auto;
 }
 
 .browse-main {
     display: flex;
     flex-direction: column;
     width: 100%;
+    flex: 1;
 }
 
 .filter-box {

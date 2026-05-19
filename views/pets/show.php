@@ -149,7 +149,6 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
         <?php if ($pet['status'] === 'available'): ?>
           <div class="contact-chips">
             <?php if ($pet['phone']): ?><a href="tel:<?= htmlspecialchars($pet['phone']) ?>" class="chip">📞 <?= htmlspecialchars($pet['phone']) ?></a><?php endif; ?>
-            <?php if ($pet['email']): ?><a href="mailto:<?= htmlspecialchars($pet['email']) ?>" class="chip">✉️ Email</a><?php endif; ?>
             <?php if ($pet['facebook']): ?><a href="<?= htmlspecialchars($pet['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
           </div>
         <?php endif; ?>

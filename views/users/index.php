@@ -222,7 +222,6 @@ $adopter_title  = get_adopter_title($adopter_points);
                       <?php if ($req['message']): ?><p>"<?= htmlspecialchars($req['message']) ?>"</p><?php endif; ?>
                       <div class="contact-chips">
                         <?php if ($req['phone']): ?><a href="tel:<?= htmlspecialchars($req['phone']) ?>" class="chip">📞 <?= htmlspecialchars($req['phone']) ?></a><?php endif; ?>
-                        <a href="mailto:<?= htmlspecialchars($req['req_email']) ?>" class="chip">✉️ Email</a>
                         <?php if ($req['facebook']): ?><a href="<?= htmlspecialchars($req['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
                       </div>
                     </div>

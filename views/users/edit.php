@@ -59,7 +59,7 @@ require_once '../../controllers/users/update.php';
       </div>
       <div class="form-group">
         <label>New Password</label>
-        <input type="password" name="new_password" placeholder="Min. 8 characters">
+        <input type="password" name="new_password" placeholder="Min. 6 characters">
       </div>
       <div class="form-group">
         <label>Confirm New Password</label>
@@ -73,10 +73,6 @@ require_once '../../controllers/users/update.php';
         <?php endif; ?>
         <input type="file" name="profile_photo" accept="image/*">
         <small style="color:var(--gray-4)">JPG, PNG or GIF under 5MB</small>
-      </div>
-
-      <div style="font-size:12px;color:var(--gray-4);margin-bottom:10px">
-        <span class="req">*</span> Required. At least one of Phone or Facebook is required.
       </div>
 
       <div style="display:flex;gap:10px">

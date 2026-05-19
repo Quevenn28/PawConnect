@@ -6,10 +6,10 @@
 
 session_start();
 
-$host = "localhost";
-$db   = "pawconnectDB";
-$user = "root";
-$pass = "root";
+$host = "it208.2025.ccsit.info";
+$db   = "paw_connect_db";
+$user = "paw_connect_user";
+$pass = "61YydlfKlNWOhVTs";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);

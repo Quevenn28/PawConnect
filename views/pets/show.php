@@ -222,7 +222,7 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
           <?php if ($already_reported): ?>
             <span style="font-size:12px;color:var(--gray-4)">✓ You've already reported this listing.</span>
           <?php else: ?>
-            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing or rehomer</button>
+            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing</button>
           <?php endif; ?>
         </div>
 

@@ -71,35 +71,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Remove post confirmation
+    // Remove post confirmation (AJAX - stays on dashboard)
     document.querySelectorAll('.remove-btn').forEach(btn => {
         btn.closest('form').addEventListener('submit', e => {
             e.preventDefault();
+            const form = btn.closest('form');
+            const petName = btn.dataset.name;
+            
             Swal.fire({
                 title: 'Remove post?',
-                text: 'Remove "' + btn.dataset.name + '"? This hides it from public.',
+                text: 'Remove "' + petName + '"? This hides it from public.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, remove',
                 confirmButtonColor: '#dc2626'
-            }).then(result => {
-                if (result.isConfirmed) btn.closest('form').submit();
+            }).then(async result => {
+                if (result.isConfirmed) {
+                    const formData = new FormData(form);
+                    formData.append('action', 'remove');
+                    formData.append('report_id', form.dataset.reportId);
+                    formData.append('pet_id', form.dataset.petId);
+                    
+                    try {
+                        const response = await fetch('/controllers/admin/reports.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const res = await parseJsonResponse(response);
+                        
+                        if (res.success) {
+                            showAlert('✅ ' + res.message, true);
+                            // Refresh dashboard by reloading reports section
+                            setTimeout(() => location.href = '?tab=reports', 800);
+                        } else {
+                            showAlert(res.error || 'Error occurred', false);
+                        }
+                    } catch (error) {
+                        console.error('Remove error:', error);
+                        showAlert('Error: ' + error.message, false);
+                    }
+                }
             });
         });
     });
     
-    // Dismiss report confirmation
+    // Dismiss report confirmation (AJAX - stays on dashboard)
     document.querySelectorAll('.dismiss-btn').forEach(btn => {
         btn.closest('form').addEventListener('submit', e => {
             e.preventDefault();
+            const form = btn.closest('form');
+            const petName = btn.dataset.name;
+            
             Swal.fire({
                 title: 'Dismiss report?',
-                text: 'Dismiss report for "' + btn.dataset.name + '"? No action will be taken.',
+                text: 'Dismiss report for "' + petName + '"? No action will be taken.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, dismiss'
-            }).then(result => {
-                if (result.isConfirmed) btn.closest('form').submit();
+            }).then(async result => {
+                if (result.isConfirmed) {
+                    const formData = new FormData(form);
+                    formData.append('action', 'dismiss');
+                    formData.append('report_id', form.dataset.reportId);
+                    formData.append('pet_id', form.dataset.petId);
+                    
+                    try {
+                        const response = await fetch('/controllers/admin/reports.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const res = await parseJsonResponse(response);
+                        
+                        if (res.success) {
+                            showAlert('✅ ' + res.message, true);
+                            // Refresh dashboard by reloading reports section
+                            setTimeout(() => location.href = '?tab=reports', 800);
+                        } else {
+                            showAlert(res.error || 'Error occurred', false);
+                        }
+                    } catch (error) {
+                        console.error('Dismiss error:', error);
+                        showAlert('Error: ' + error.message, false);
+                    }
+                }
             });
         });
     });
@@ -289,6 +345,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
+        });
+    });
+    
+    // ============================================================
+    // SORT DROPDOWN TOGGLE (Reports page)
+    // ============================================================
+    
+    const sortWrap = document.getElementById('sortWrap');
+    const sortToggle = document.getElementById('sortToggle');
+    
+    if (sortToggle) {
+        sortToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortWrap.classList.toggle('open');
+        });
+    }
+    
+    if (sortWrap) {
+        document.addEventListener('click', () => {
+            sortWrap.classList.remove('open');
+        });
+    }
+    
+    // ============================================================
+    // REPORT ACTION CONFIRMATIONS (Reports page)
+    // ============================================================
+    
+    document.querySelectorAll('.report-action-form').forEach(f => {
+        f.addEventListener('submit', e => {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: f.dataset.confirm,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: f.dataset.confirmBtn,
+                confirmButtonColor: f.dataset.confirmColor,
+                cancelButtonText: 'Cancel'
+            }).then(r => { if (r.isConfirmed) f.submit(); });
         });
     });
 });

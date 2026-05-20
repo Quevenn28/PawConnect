@@ -7,9 +7,19 @@ require_moderator();
 $reportObj = new Report($pdo);
 $petObj    = new Pet($pdo);
 
-$reports = is_admin() ? $reportObj->getAll() : $reportObj->getPending();
+// Sort option: 'recent' | 'oldest' | 'most_reported'
+$allowed_sorts = ['recent', 'oldest', 'most_reported'];
+$sort = in_array($_GET['sort'] ?? '', $allowed_sorts) ? $_GET['sort'] : 'recent';
+
+$reports = is_admin() ? $reportObj->getAll($sort) : $reportObj->getPending($sort);
 $success = $_GET['success'] ?? '';
 $error   = $_GET['error']   ?? '';
+
+$sort_labels = [
+    'recent'       => '🕐 Most Recent',
+    'oldest'       => '📅 Oldest First',
+    'most_reported'=> '🔥 Most Reported',
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +43,9 @@ $error   = $_GET['error']   ?? '';
     <a href="dashboard.php" class="btn btn-gray btn-sm">← Back to Panel</a>
   </div>
 
-  <?php if ($success): ?><div class="alert alert-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+  <?php if ($success): ?>
+    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+  <?php endif; ?>
   <?php if ($error === 'own_post'): ?>
     <div class="alert alert-error">⚠️ You cannot moderate your own pet listing.</div>
   <?php endif; ?>
@@ -45,9 +57,26 @@ $error   = $_GET['error']   ?? '';
     </div>
   <?php else: ?>
   <div class="panel" style="padding:0;overflow:hidden">
-    <div class="panel-header">
+    <div class="panel-header" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center">
       <h2>Reports (<?= count($reports) ?>)</h2>
+
+      <!-- Sort dropdown -->
+      <div class="sort-wrap" id="sortWrap">
+        <button class="sort-btn" id="sortToggle" type="button">
+          <span>Sort: <?= htmlspecialchars($sort_labels[$sort]) ?></span>
+          <span class="sort-arrow">▼</span>
+        </button>
+        <div class="sort-dropdown">
+          <?php foreach ($sort_labels as $val => $label): ?>
+            <a href="?sort=<?= $val ?>"
+               class="sort-option <?= $sort === $val ? 'active' : '' ?>">
+              <?= $label ?>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      </div>
     </div>
+
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse">
       <thead style="background:var(--gray-6);font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gray-3)">
@@ -55,6 +84,7 @@ $error   = $_GET['error']   ?? '';
           <th style="padding:10px 16px;text-align:left">Pet</th>
           <th style="padding:10px 16px;text-align:left">Reported By</th>
           <th style="padding:10px 16px;text-align:left">Reason</th>
+          <th style="padding:10px 16px;text-align:center">Reports</th>
           <th style="padding:10px 16px;text-align:center">Status</th>
           <th style="padding:10px 16px;text-align:center">Date</th>
           <?php if (is_admin()): ?>
@@ -108,6 +138,17 @@ $error   = $_GET['error']   ?? '';
             <?php endif; ?>
           </td>
 
+          <!-- Report count badge -->
+          <td style="padding:12px 16px;text-align:center">
+            <?php if ((int)$r['report_count'] > 1): ?>
+              <span class="user-row-badge" style="background:#fef2f2;color:#dc2626;font-size:12px">
+                🔥 <?= (int)$r['report_count'] ?>x
+              </span>
+            <?php else: ?>
+              <span style="font-size:12px;color:var(--gray-4)">1</span>
+            <?php endif; ?>
+          </td>
+
           <!-- Status -->
           <td style="padding:12px 16px;text-align:center">
             <?php
@@ -151,7 +192,7 @@ $error   = $_GET['error']   ?? '';
               <?php else: ?>
                 <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
                   <!-- Remove post -->
-                  <form method="POST" action="../../controllers/admin/reports.php"
+                  <form method="POST" action="../../controllers/admin/reports.php?sort=<?= urlencode($sort) ?>"
                         class="report-action-form"
                         data-confirm="Remove this pet listing? It will be hidden from the public."
                         data-confirm-btn="🗑️ Yes, Remove"
@@ -160,6 +201,7 @@ $error   = $_GET['error']   ?? '';
                     <input type="hidden" name="action"    value="remove">
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="pet_id"    value="<?= $r['pet_id'] ?>">
+                    <input type="hidden" name="sort"      value="<?= htmlspecialchars($sort) ?>">
                     <button class="btn btn-red btn-sm">🗑️ Remove Post</button>
                   </form>
                   <!-- Dismiss -->
@@ -172,6 +214,7 @@ $error   = $_GET['error']   ?? '';
                     <input type="hidden" name="action"    value="dismiss">
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="pet_id"    value="<?= $r['pet_id'] ?>">
+                    <input type="hidden" name="sort"      value="<?= htmlspecialchars($sort) ?>">
                     <button class="btn btn-sm" style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">✅ Dismiss</button>
                   </form>
                 </div>
@@ -190,22 +233,7 @@ $error   = $_GET['error']   ?? '';
   <?php endif; ?>
 </div>
 
-<script>
-document.querySelectorAll('.report-action-form').forEach(f => {
-  f.addEventListener('submit', e => {
-    e.preventDefault();
-    Swal.fire({
-      title: 'Are you sure?',
-      text: f.dataset.confirm,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: f.dataset.confirmBtn,
-      confirmButtonColor: f.dataset.confirmColor,
-      cancelButtonText: 'Cancel'
-    }).then(r => { if (r.isConfirmed) f.submit(); });
-  });
-});
-</script>
+<script src="/assets/js/admin.js"></script>
 
 <?php footer_bar(); ?>
 </body>

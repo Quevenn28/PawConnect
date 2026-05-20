@@ -293,3 +293,94 @@
     border-radius: 6px;
     font-style: italic;
 }
+
+/* ============================================================
+   SORT DROPDOWN
+   ============================================================ */
+
+.sort-wrap {
+    position: relative;
+    display: inline-block;
+    min-width: 180px;
+}
+
+.sort-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 11px 14px;
+    background: var(--white);
+    border: 2px solid var(--gray-5);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family: 'Lora', serif;
+    color: var(--gray-1);
+    cursor: pointer;
+    transition: border-color 0.2s;
+    white-space: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sort-btn:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+.sort-btn .sort-arrow {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.sort-wrap.open .sort-btn {
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+.sort-wrap.open .sort-arrow {
+    transform: rotate(180deg);
+}
+
+.sort-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--gray-5);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+    z-index: 1000;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.sort-wrap.open .sort-dropdown {
+    display: flex;
+    flex-direction: column;
+}
+
+.sort-option {
+    display: block;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-family: 'Lora', serif;
+    color: var(--gray-1);
+    text-decoration: none;
+    transition: background 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sort-option:hover {
+    background: var(--gray-6);
+    color: var(--orange);
+}
+
+.sort-option.active {
+    background: rgba(249, 115, 22, 0.08);
+    color: var(--orange);
+    font-weight: 700;
+}

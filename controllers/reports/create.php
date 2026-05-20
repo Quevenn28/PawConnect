@@ -11,7 +11,6 @@ $details = trim($_POST['details'] ?? '');
 
 $reportObj = new Report($pdo);
 
-// Guard: prevent reporting the same pet twice
 if ($reportObj->hasReported($pet_id, $_SESSION['user_id'])) {
     flash('error', 'You have already reported this listing.');
     header("Location: ../../views/pets/show.php?id=" . encode_id($pet_id));
@@ -22,9 +21,9 @@ $ok = $reportObj->create($pet_id, $_SESSION['user_id'], $reason, $details);
 
 if ($ok) {
     flash('success', 'Report submitted. Our moderators will review it shortly.');
-    header("Location: ../../views/pets/show.php?id=$pet_id");
 } else {
     flash('error', 'Could not submit report. You may have already reported this listing.');
-    header("Location: ../../views/pets/show.php?id=$pet_id");
 }
+
+header("Location: ../../views/pets/show.php?id=" . encode_id($pet_id));
 exit;

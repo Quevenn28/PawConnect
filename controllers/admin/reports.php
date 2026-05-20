@@ -9,6 +9,11 @@ $action    = $_POST['action']    ?? '';
 $report_id = (int)($_POST['report_id'] ?? 0);
 $pet_id    = (int)($_POST['pet_id']    ?? 0);
 
+// Preserve sort state across the redirect
+$allowed_sorts = ['recent', 'oldest', 'most_reported'];
+$sort = in_array($_POST['sort'] ?? '', $allowed_sorts) ? $_POST['sort'] : 'recent';
+$sort_param = '&sort=' . urlencode($sort);
+
 $reportObj = new Report($pdo);
 $petObj    = new Pet($pdo);
 $logObj    = new ModLog($pdo);
@@ -18,7 +23,7 @@ $report = $reportObj->findById($report_id);
 if ($report) {
     $pet = $petObj->findById($report['pet_id']);
     if ($pet && $pet['user_id'] == $_SESSION['user_id']) {
-        header("Location: ../../views/admin/dashboard.php?tab=reports&error=own_post");
+        header("Location: ../../views/admin/reports.php?error=own_post" . $sort_param);
         exit;
     }
 }
@@ -57,5 +62,5 @@ if ($action === 'remove') {
     award_points($pdo, $_SESSION['user_id'], PTS_MOD_DISMISS, 'Dismissed report', 'mod');
 }
 
-header("Location: ../../views/admin/dashboard.php?tab=reports");
+header("Location: ../../views/admin/reports.php?sort=" . urlencode($sort));
 exit;

@@ -11,6 +11,16 @@ $logObj    = new ModLog($pdo);
 
 $tab = $_GET['tab'] ?? 'reports';
 
+// Sort option for reports: 'recent' | 'oldest' | 'most_reported'
+$allowed_sorts = ['recent', 'oldest', 'most_reported'];
+$sort = in_array($_GET['sort'] ?? '', $allowed_sorts) ? $_GET['sort'] : 'recent';
+
+$sort_labels = [
+    'recent'       => '🕐 Most Recent',
+    'oldest'       => '📅 Oldest First',
+    'most_reported'=> '🔥 Most Reported',
+];
+
 // Stats
 $total_users    = $pdo->query("SELECT COUNT(*) FROM users WHERE role='user'")->fetchColumn();
 $total_mods     = $pdo->query("SELECT COUNT(*) FROM users WHERE role='moderator'")->fetchColumn();
@@ -21,7 +31,7 @@ $pending_reports= $reportObj->getPendingCount();
 $total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1 AND (ban_until IS NULL OR ban_until > NOW())")->fetchColumn();
 
 // Tab data
-$reports   = $tab === 'reports' ? $reportObj->getPending() : [];
+$reports   = $tab === 'reports' ? $reportObj->getPending($sort) : [];
 $all_pets  = $tab === 'pets'    ? $petObj->getAllAdmin($_GET['q'] ?? '') : [];
 $mod_logs  = ($tab === 'logs' && is_admin()) ? $logObj->getAll() : [];
 $my_logs   = $tab === 'mylogs'  ? $logObj->getByMod($_SESSION['user_id']) : [];
@@ -114,7 +124,24 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 
             <!-- TAB: REPORTS -->
             <?php if ($tab === 'reports'): ?>
-              <h2 style="font-size:18px;margin-bottom:16px">Pending Reports</h2>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <h2 style="font-size:18px;margin:0">Pending Reports</h2>
+                <!-- Sort dropdown -->
+                <div class="sort-wrap" id="sortWrap">
+                  <button class="sort-btn" id="sortToggle" type="button">
+                    <span>Sort: <?= htmlspecialchars($sort_labels[$sort]) ?></span>
+                    <span class="sort-arrow">▼</span>
+                  </button>
+                  <div class="sort-dropdown">
+                    <?php foreach ($sort_labels as $val => $label): ?>
+                      <a href="?tab=reports&sort=<?= $val ?>"
+                         class="sort-option <?= $sort === $val ? 'active' : '' ?>">
+                        <?= $label ?>
+                      </a>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+              </div>
               <?php if (!$reports): ?>
                 <div class="empty-state"><div class="empty-icon">✅</div><p>No pending reports. All clear!</p></div>
               <?php endif; ?>
@@ -147,18 +174,13 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                     <?php if ($is_own_post): ?>
                       <span class="mod-restricted">You cannot moderate your own content</span>
                     <?php else: ?>
-                      <form method="POST" action="../../controllers/admin/reports.php" style="display:inline">
+                      <form class="report-ajax-form" style="display:inline" data-action="remove" data-report-id="<?= $r['id'] ?>" data-pet-id="<?= $r['pet_id'] ?>">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                        <input type="hidden" name="action" value="remove">
-                        <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
-                        <input type="hidden" name="pet_id" value="<?= $r['pet_id'] ?>">
-                        <button class="btn btn-red btn-sm remove-btn" data-name="<?= htmlspecialchars($r['pet_name']) ?>">🗑️ Remove Post</button>
+                        <button class="btn btn-red btn-sm remove-btn" type="submit" data-name="<?= htmlspecialchars($r['pet_name']) ?>">🗑️ Remove Post</button>
                       </form>
-                      <form method="POST" action="../../controllers/admin/reports.php" style="display:inline">
+                      <form class="report-ajax-form" style="display:inline" data-action="dismiss" data-report-id="<?= $r['id'] ?>" data-pet-id="<?= $r['pet_id'] ?>">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                        <input type="hidden" name="action" value="dismiss">
-                        <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
-                        <button class="btn btn-gray btn-sm dismiss-btn" data-name="<?= htmlspecialchars($r['pet_name']) ?>">✅ Dismiss</button>
+                        <button class="btn btn-gray btn-sm dismiss-btn" type="submit" data-name="<?= htmlspecialchars($r['pet_name']) ?>">✅ Dismiss</button>
                       </form>
                       <form method="POST" action="/controllers/admin/ban.php" style="display:inline">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">

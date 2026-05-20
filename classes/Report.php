@@ -35,28 +35,42 @@ class Report {
 
     /**
      * Get all pending reports for the moderation panel.
+     * $sort: 'recent' | 'oldest' | 'most_reported'
      */
-    public function getPending(): array {
+    public function getPending(string $sort = 'recent'): array {
+        $order = match($sort) {
+            'oldest'       => 'r.created_at ASC',
+            'most_reported'=> 'report_count DESC, r.created_at DESC',
+            default        => 'r.created_at DESC',
+        };
         return $this->pdo->query("
             SELECT r.*,
                    p.name AS pet_name, p.photo AS pet_photo,
                    p.species, p.status AS pet_status,
                    p.user_id AS pet_owner_id,
                    u.full_name AS reporter_name,
-                   o.full_name AS owner_name, o.username AS owner_username
+                   o.full_name AS owner_name, o.username AS owner_username,
+                   (SELECT COUNT(*) FROM reports r2
+                    WHERE r2.pet_id = r.pet_id AND r2.status = 'pending') AS report_count
             FROM reports r
             JOIN pets  p ON p.id = r.pet_id
             JOIN users u ON u.id = r.reporter_id
             JOIN users o ON o.id = p.user_id
             WHERE r.status = 'pending'
-            ORDER BY r.created_at DESC
+            ORDER BY $order
         ")->fetchAll();
     }
 
     /**
      * Get all reports (admin view — includes reviewed/dismissed).
+     * $sort: 'recent' | 'oldest' | 'most_reported'
      */
-    public function getAll(): array {
+    public function getAll(string $sort = 'recent'): array {
+        $order = match($sort) {
+            'oldest'        => 'r.created_at ASC',
+            'most_reported' => 'report_count DESC, r.created_at DESC',
+            default         => 'r.created_at DESC',
+        };
         return $this->pdo->query("
             SELECT r.*,
                    p.name AS pet_name, p.photo AS pet_photo,
@@ -64,13 +78,15 @@ class Report {
                    p.user_id AS pet_owner_id,
                    u.full_name AS reporter_name,
                    o.full_name AS owner_name,
-                   m.full_name AS reviewer_name
+                   m.full_name AS reviewer_name,
+                   (SELECT COUNT(*) FROM reports r2
+                    WHERE r2.pet_id = r.pet_id) AS report_count
             FROM reports r
             JOIN pets  p ON p.id  = r.pet_id
             JOIN users u ON u.id  = r.reporter_id
             JOIN users o ON o.id  = p.user_id
             LEFT JOIN users m ON m.id = r.reviewed_by
-            ORDER BY r.created_at DESC
+            ORDER BY $order
         ")->fetchAll();
     }
 
@@ -114,13 +130,29 @@ class Report {
 
     /**
      * Mark report as 'removed' — the pet was taken down.
+     * Also bulk-dismisses all other pending reports for the same pet.
      */
     public function markRemoved(int $report_id, int $reviewer_id): void {
+        // First get the pet_id so we can close sibling reports
+        $stmt = $this->pdo->prepare("SELECT pet_id FROM reports WHERE id=?");
+        $stmt->execute([$report_id]);
+        $pet_id = (int) $stmt->fetchColumn();
+
+        // Mark the actioned report as 'removed'
         $this->pdo->prepare("
             UPDATE reports
             SET status='removed', reviewed_by=?, reviewed_at=NOW()
             WHERE id=?
         ")->execute([$reviewer_id, $report_id]);
+
+        // Auto-dismiss all remaining pending reports for the same pet
+        if ($pet_id) {
+            $this->pdo->prepare("
+                UPDATE reports
+                SET status='dismissed', reviewed_by=?, reviewed_at=NOW()
+                WHERE pet_id=? AND status='pending' AND id != ?
+            ")->execute([$reviewer_id, $pet_id, $report_id]);
+        }
     }
 
     /**

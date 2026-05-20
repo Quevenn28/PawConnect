@@ -14,6 +14,17 @@
     padding-right: 44px;
 }
 
+.password-wrap input::-ms-reveal,
+.password-wrap input::-ms-clear {
+    display: none;
+}
+
+.password-wrap input::-webkit-credentials-auto-fill-button {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .toggle-pw {
     position: absolute;
     right: 10px;

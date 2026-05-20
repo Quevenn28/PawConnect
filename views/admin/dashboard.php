@@ -16,13 +16,14 @@ $total_users    = $pdo->query("SELECT COUNT(*) FROM users WHERE role='user'")->f
 $total_mods     = $pdo->query("SELECT COUNT(*) FROM users WHERE role='moderator'")->fetchColumn();
 $total_pets     = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='available'")->fetchColumn();
 $total_removed  = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='removed'")->fetchColumn();
+$total_adopted  = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='adopted'")->fetchColumn();
 $pending_reports= $reportObj->getPendingCount();
 $total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1 AND (ban_until IS NULL OR ban_until > NOW())")->fetchColumn();
 
 // Tab data
 $reports   = $tab === 'reports' ? $reportObj->getPending() : [];
 $all_pets  = $tab === 'pets'    ? $petObj->getAllAdmin($_GET['q'] ?? '') : [];
-$mod_logs  = $tab === 'logs'    ? $logObj->getAll() : [];
+$mod_logs  = ($tab === 'logs' && is_admin()) ? $logObj->getAll() : [];
 $my_logs   = $tab === 'mylogs'  ? $logObj->getByMod($_SESSION['user_id']) : [];
 $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '') : [];
 ?>
@@ -59,7 +60,9 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
             </a>
             <a href="?tab=pets"   class="admin-tab <?= $tab==='pets'?'active':'' ?>">🐾 All Pets</a>
             <a href="?tab=mylogs" class="admin-tab <?= $tab==='mylogs'?'active':'' ?>">📋 My Activity</a>
+            <?php if (is_admin()): ?>
             <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 Activity Log</a>
+            <?php endif; ?>
             <?php if (is_admin()): ?>
               <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
               <a href="backup.php" class="admin-tab">💾 Backup & Restore</a>
@@ -88,6 +91,10 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
               <div class="stat-card">
                 <div class="stat-num"><?= $total_removed ?></div>
                 <div class="stat-lbl">Removed Posts</div>
+              </div>
+              <div class="stat-card green">
+                <div class="stat-num"><?= $total_adopted ?></div>
+                <div class="stat-lbl">Pets Adopted</div>
               </div>
               <?php if (is_admin()): ?>
               <div class="stat-card blue">
@@ -313,7 +320,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
               <?php endif; ?>
 
             <!-- TAB: ACTIVITY LOG -->
-            <?php elseif ($tab === 'logs'): ?>
+            <?php elseif ($tab === 'logs' && is_admin()): ?>
               <h2 style="font-size:18px;margin-bottom:16px">Activity Log</h2>
               <?php if (!$mod_logs): ?>
                 <div class="empty-state"><div class="empty-icon">📋</div><p>No moderation actions yet.</p></div>

@@ -35,6 +35,9 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="/assets/js/main.js"></script>
+  <script>
+    const isMod = <?= is_admin() ? 'false' : 'true' ?>;
+  </script>
   <script src="/assets/js/admin.js"></script>
 </head>
 <body class="has-fixed-sidebar">
@@ -56,8 +59,8 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
             </a>
             <a href="?tab=pets"   class="admin-tab <?= $tab==='pets'?'active':'' ?>">🐾 All Pets</a>
             <a href="?tab=mylogs" class="admin-tab <?= $tab==='mylogs'?'active':'' ?>">📋 My Activity</a>
+            <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 Activity Log</a>
             <?php if (is_admin()): ?>
-              <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 All Mod Logs</a>
               <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
               <a href="backup.php" class="admin-tab">💾 Backup & Restore</a>
             <?php endif; ?>
@@ -150,12 +153,11 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                         <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                         <button class="btn btn-gray btn-sm dismiss-btn" data-name="<?= htmlspecialchars($r['pet_name']) ?>">✅ Dismiss</button>
                       </form>
-                      <form method="POST" action="../../controllers/admin/ban.php" style="display:inline">
+                      <form method="POST" action="/controllers/admin/ban.php" style="display:inline">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                         <input type="hidden" name="user_id" value="<?= $r['pet_owner_id'] ?>">
                         <input type="hidden" name="duration" value="<?= is_admin() ? '0' : '24' ?>">
-                        <input type="hidden" name="redirect" value="<?= urlencode('../../views/admin/dashboard.php?tab=reports') ?>">
-                        <button class="btn btn-red btn-sm ban-btn" data-name="<?= htmlspecialchars($r['owner_name']) ?>">🚫 <?= is_admin() ? 'Ban User' : 'Ban 24h' ?></button>
+                        <button type="button" class="btn btn-red btn-sm ban-btn" data-name="<?= htmlspecialchars($r['owner_name']) ?>">🚫 <?= is_admin() ? 'Ban User' : 'Ban 24h' ?></button>
                       </form>
                     <?php endif; ?>
                   </div>
@@ -259,10 +261,19 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                           <?php else: ?>
                             <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
                           <?php endif; ?>
+                        <?php elseif ($log['target_type'] === 'user'): ?>
+                          <?php $target_user = $userObj->findById($log['target_id']); ?>
+                          <?php if ($target_user): ?>
+                            <div style="font-weight:700">@<?= htmlspecialchars($target_user['username']) ?></div>
+                            <div style="color:var(--gray-4);font-size:11px;margin-bottom:4px"><?= htmlspecialchars($target_user['full_name']) ?> (<?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?>)</div>
+                          <?php else: ?>
+                            <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
+                          <?php endif; ?>
                         <?php else: ?>
                           <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?>
                         <?php endif; ?>
                       </td>
+                
                       <td style="padding:10px 12px;color:var(--gray-3);max-width:200px">
                         <?php if ($log['action'] === 'removed_post'): ?>
                           <?php
@@ -301,9 +312,9 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
               </div>
               <?php endif; ?>
 
-            <!-- TAB: ALL MOD LOGS (Admin only) -->
-            <?php elseif ($tab === 'logs' && is_admin()): ?>
-              <h2 style="font-size:18px;margin-bottom:16px">All Moderator Activity</h2>
+            <!-- TAB: ACTIVITY LOG -->
+            <?php elseif ($tab === 'logs'): ?>
+              <h2 style="font-size:18px;margin-bottom:16px">Activity Log</h2>
               <?php if (!$mod_logs): ?>
                 <div class="empty-state"><div class="empty-icon">📋</div><p>No moderation actions yet.</p></div>
               <?php else: ?>
@@ -336,6 +347,14 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                             <div style="font-weight:700"><?= htmlspecialchars($target_pet['name']) ?></div>
                             <div style="color:var(--gray-4);font-size:11px;margin-bottom:4px"><?= ModLog::targetLabel($log['target_type']) ?></div>
                             <a href="../../views/pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-gray btn-sm" style="font-size:11px">👁️ View Post</a>
+                          <?php else: ?>
+                            <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
+                          <?php endif; ?>
+                        <?php elseif ($log['target_type'] === 'user'): ?>
+                          <?php $target_user = $userObj->findById($log['target_id']); ?>
+                          <?php if ($target_user): ?>
+                            <div style="font-weight:700">@<?= htmlspecialchars($target_user['username']) ?></div>
+                            <div style="color:var(--gray-4);font-size:11px;margin-bottom:4px"><?= htmlspecialchars($target_user['full_name']) ?> (<?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?>)</div>
                           <?php else: ?>
                             <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
                           <?php endif; ?>
@@ -438,26 +457,24 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                             <button class="btn btn-gray btn-sm" style="font-size:11px;padding:4px 8px">Set</button>
                           </form>
                           <?php if ($u['is_banned']): ?>
-                            <form method="POST" action="../../controllers/admin/ban.php" style="display:inline">
+                            <form method="POST" action="/controllers/admin/ban.php" class="unban-form" data-name="<?= htmlspecialchars($u['full_name']) ?>">
                               <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                               <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                               <input type="hidden" name="action" value="unban">
-                              <input type="hidden" name="redirect" value="<?= urlencode('../../views/admin/dashboard.php?tab=users') ?>">
                               <button class="btn btn-green btn-sm" style="font-size:11px">✓ Unban</button>
                             </form>
                           <?php else: ?>
-                            <form method="POST" action="../../controllers/admin/ban.php" style="display:inline">
+                            <form method="POST" action="/controllers/admin/ban.php" style="display:inline">
                               <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                               <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                               <input type="hidden" name="action" value="ban">
-                              <input type="hidden" name="redirect" value="<?= urlencode('../../views/admin/dashboard.php?tab=users') ?>">
                               <select name="duration" style="font-size:11px;padding:3px 6px;border-radius:6px;border:1px solid var(--gray-5)">
                                 <option value="24">24 hours</option>
                                 <option value="72">3 days</option>
                                 <option value="168">7 days</option>
                                 <option value="0">Permanent</option>
                               </select>
-                              <button class="btn btn-red btn-sm" style="font-size:11px">🚫 Ban</button>
+                              <button type="button" class="btn btn-red btn-sm ban-btn" data-name="<?= htmlspecialchars($u['full_name']) ?>" style="font-size:11px">🚫 Ban</button>
                             </form>
                           <?php endif; ?>
                         </div>

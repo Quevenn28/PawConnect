@@ -120,6 +120,7 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
       <div class="attrs-grid">
         <div class="attr-item"><span>Age</span><strong><?= htmlspecialchars($pet['age']?:'Unknown') ?></strong></div>
         <div class="attr-item"><span>Gender</span><strong><?= htmlspecialchars($pet['gender']) ?></strong></div>
+        <div class="attr-item"><span>Vaccinated</span><strong><?= htmlspecialchars($pet['vaccinated'] ?? 'Unknown') ?></strong></div>
         <div class="attr-item"><span>Spayed / Neutered</span><strong><?= htmlspecialchars($pet['spayed_neutered'] ?? 'Unknown') ?></strong></div>
         <div class="attr-item"><span>Good with Children</span><strong><?= htmlspecialchars($pet['good_with_children'] ?? 'Unknown') ?></strong></div>
       </div>

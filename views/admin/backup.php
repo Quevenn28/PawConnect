@@ -46,6 +46,9 @@ $logs = $logs->fetchAll();
     <link rel="stylesheet" href="../../assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/assets/js/main.js"></script>
+    <script>
+      const isMod = <?= is_admin() ? 'false' : 'true' ?>;
+    </script>
     <script src="/assets/js/admin.js"></script>
 </head>
 <body class="has-fixed-sidebar">

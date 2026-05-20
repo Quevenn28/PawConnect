@@ -104,7 +104,7 @@ $error   = $_GET['error']   ?? '';
 
               <!-- Ban/Unban -->
               <?php if ($is_banned_now): ?>
-                <form method="POST" action="../../controllers/admin/ban.php" class="unban-form" data-name="<?= htmlspecialchars($u['full_name']) ?>">
+                <form method="POST" action="/controllers/admin/ban.php" class="unban-form" data-name="<?= htmlspecialchars($u['full_name']) ?>">
                   <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                   <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                   <input type="hidden" name="action" value="unban">
@@ -137,7 +137,7 @@ $error   = $_GET['error']   ?? '';
   <div style="background:white;border-radius:16px;padding:32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <h3 style="margin-bottom:8px">🚫 Ban <span id="banUserName"></span></h3>
     <p style="font-size:14px;color:var(--gray-3);margin-bottom:20px">Choose ban type and provide a reason.</p>
-    <form method="POST" action="../../controllers/admin/ban.php" id="banForm">
+    <form method="POST" action="/controllers/admin/ban.php" id="banForm">
       <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
       <input type="hidden" name="user_id" id="banUserId">
       <input type="hidden" name="action" value="ban">
@@ -167,35 +167,9 @@ $error   = $_GET['error']   ?? '';
 
 <script>
 const isMod = <?= is_admin() ? 'false' : 'true' ?>;
-
-document.querySelectorAll('.open-ban-modal').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.getElementById('banUserId').value   = btn.dataset.id;
-    document.getElementById('banUserName').textContent = btn.dataset.name;
-    const modal = document.getElementById('banModal');
-    modal.style.display = 'flex';
-    if (isMod) {
-      const sel = document.getElementById('banDuration');
-      sel.value    = '24h';
-      sel.disabled = true;
-      document.getElementById('modBanNote').style.display = 'block';
-    }
-  });
-});
-
-function closeBanModal() {
-  document.getElementById('banModal').style.display = 'none';
-  document.getElementById('banDuration').disabled   = false;
-  document.getElementById('modBanNote').style.display = 'none';
-}
-
-document.querySelectorAll('.unban-form').forEach(f => {
-  f.addEventListener('submit', e => {
-    e.preventDefault();
-    Swal.fire({ title:'Unban '+f.dataset.name+'?', icon:'question', showCancelButton:true, confirmButtonText:'Yes, unban', confirmButtonColor:'#16a34a' }).then(r => { if(r.isConfirmed) f.submit(); });
-  });
-});
 </script>
+
+<script src="/assets/js/admin.js"></script>
 
 <?php footer_bar(); ?>
 </body>

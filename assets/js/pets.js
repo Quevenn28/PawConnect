@@ -117,4 +117,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // ============================================================
+    // IMAGE MODAL FOR PET PHOTO (show.php)
+    // ============================================================
+    
+    const petPhoto = document.getElementById('petPhoto');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeModal = document.querySelector('#imageModal .close-modal');
+    
+    if (petPhoto && modal && modalImg) {
+        petPhoto.addEventListener('click', function() {
+            modal.style.display = 'flex';
+            modalImg.src = this.src;
+        });
+    }
+    
+    if (closeModal && modal) {
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
 });

@@ -102,7 +102,9 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
   <div class="pet-detail-grid">
     <div>
       <?php if ($pet['photo']): ?>
-        <div class="pet-detail-img"><img src="../../uploads/pets/<?= htmlspecialchars($pet['photo']) ?>" alt=""></div>
+        <div class="pet-detail-img">
+          <img src="../../uploads/pets/<?= htmlspecialchars($pet['photo']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>" id="petPhoto">
+        </div>
       <?php else: ?>
         <div class="pet-detail-no-img"><?= Pet::emoji($pet['species']) ?></div>
       <?php endif; ?>
@@ -253,6 +255,12 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 
     </div>
   </div>
+</div>
+
+<!-- Image Modal for full-size photo -->
+<div id="imageModal" class="image-modal">
+  <button class="close-modal">&times;</button>
+  <img id="modalImage" src="" alt="">
 </div>
 
 <script src="/assets/js/pets.js"></script>

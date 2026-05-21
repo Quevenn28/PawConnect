@@ -39,18 +39,48 @@ class User {
 
     /**
      * Search users by name, username, or email.
+     * Supports sort (name_az, name_za, newest, oldest),
+     * role filter (user, moderator, admin), and status filter (active, banned).
      * Admin-only feature.
      */
-    public function search(string $query): array {
-        $q = "%$query%";
+    public function search(
+        string $query = '',
+        string $sort = 'newest',
+        string $role = '',
+        string $status = ''
+    ): array {
+        $q      = '%' . $query . '%';
+        $params = [$q, $q, $q];
+        $where  = "WHERE (full_name LIKE ? OR username LIKE ? OR email LIKE ?)";
+
+        if (in_array($role, ['user', 'moderator', 'admin'], true)) {
+            $where   .= " AND role = ?";
+            $params[] = $role;
+        }
+
+        if ($status === 'banned') {
+            $where .= " AND is_banned = 1 AND (ban_until IS NULL OR ban_until > NOW())";
+        } elseif ($status === 'active') {
+            $where .= " AND (is_banned = 0 OR (ban_until IS NOT NULL AND ban_until <= NOW()))";
+        }
+
+        $order = match($sort) {
+            'name_az'     => 'full_name ASC',
+            'name_za'     => 'full_name DESC',
+            'oldest'      => 'created_at ASC',
+            'points_desc' => 'points DESC',
+            'points_asc'  => 'points ASC',
+            default       => 'created_at DESC',
+        };
+
         $stmt = $this->pdo->prepare("
             SELECT id, full_name, username, email, role, points,
                    mod_points, is_banned, ban_until, created_at
             FROM users
-            WHERE full_name LIKE ? OR username LIKE ? OR email LIKE ?
-            ORDER BY created_at DESC
+            $where
+            ORDER BY $order
         ");
-        $stmt->execute([$q, $q, $q]);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

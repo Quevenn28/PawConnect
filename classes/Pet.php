@@ -97,9 +97,9 @@ class Pet {
     }
 
     /**
-     * Admin/Mod: Get ALL pets including removed ones.
+     * Admin/Mod: Get ALL pets including removed ones, with sort and status filter.
      */
-    public function getAllAdmin(string $query = ''): array {
+    public function getAllAdmin(string $query = '', string $sort = 'recent', string $status = ''): array {
         $where  = ["1=1"];
         $params = [];
 
@@ -112,12 +112,28 @@ class Pet {
             $params[] = "%$query%";
         }
 
+        if ($status) {
+            $where[]  = "p.status = ?";
+            $params[] = $status;
+        }
+
+        $order = match($sort) {
+            'pet_az'   => 'p.name ASC',
+            'pet_za'   => 'p.name DESC',
+            'owner_az' => 'u.full_name ASC',
+            'owner_za' => 'u.full_name DESC',
+            'oldest'   => 'p.created_at ASC',
+            default    => 'p.created_at DESC',
+        };
+
         $stmt = $this->pdo->prepare("
-            SELECT p.*, u.full_name, u.username
+            SELECT p.*, u.full_name, u.username,
+                   remover.username AS removed_by
             FROM pets p
             JOIN users u ON u.id = p.user_id
+            LEFT JOIN users remover ON p.removed_by = remover.id
             WHERE " . implode(" AND ", $where) . "
-            ORDER BY p.created_at DESC
+            ORDER BY $order
         ");
         $stmt->execute($params);
         return $stmt->fetchAll();

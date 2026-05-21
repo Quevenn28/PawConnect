@@ -349,37 +349,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ============================================================
-    // DROPDOWN TOGGLES (Sort & Reason filters)
+    // DROPDOWN TOGGLES (Sort & filter dropdowns — all .sort-wrap)
     // ============================================================
-    
-    // Get all dropdown elements
-    const sortWrap = document.getElementById('sortWrap');
-    const sortToggle = document.getElementById('sortToggle');
-    const reasonWrap = document.getElementById('reasonWrap');
-    const reasonToggle = document.getElementById('reasonToggle');
-    
-    // Sort dropdown click handler
-    if (sortToggle) {
-        sortToggle.addEventListener('click', (e) => {
+
+    // Toggle clicked dropdown, close all others
+    document.querySelectorAll('.sort-wrap .sort-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            sortWrap.classList.toggle('open');
-            if (reasonWrap) reasonWrap.classList.remove('open');
+            const wrap = btn.closest('.sort-wrap');
+            const isOpen = wrap.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.sort-wrap').forEach(w => w.classList.remove('open'));
+            // Re-open if it wasn't already open
+            if (!isOpen) wrap.classList.add('open');
         });
-    }
-    
-    // Reason dropdown click handler
-    if (reasonToggle) {
-        reasonToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            reasonWrap.classList.toggle('open');
-            if (sortWrap) sortWrap.classList.remove('open');
-        });
-    }
-    
-    // Close dropdowns when clicking elsewhere
+    });
+
+    // Close all dropdowns when clicking anywhere else
     document.addEventListener('click', () => {
-        if (sortWrap) sortWrap.classList.remove('open');
-        if (reasonWrap) reasonWrap.classList.remove('open');
+        document.querySelectorAll('.sort-wrap').forEach(w => w.classList.remove('open'));
     });
     
     // ============================================================

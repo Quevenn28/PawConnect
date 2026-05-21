@@ -34,12 +34,28 @@ $total_adopted  = $pdo->query("SELECT COUNT(*) FROM pets WHERE status='adopted'"
 $pending_reports= $reportObj->getPendingCount();
 $total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1 AND (ban_until IS NULL OR ban_until > NOW())")->fetchColumn();
 
+// Pets tab sort/filter params
+$allowed_pet_sorts  = ['pet_az', 'pet_za', 'owner_az', 'owner_za', 'recent', 'oldest'];
+$_pet_sort_raw      = isset($_GET['pet_sort']) ? $_GET['pet_sort'] : '';
+$pet_sort           = in_array($_pet_sort_raw, $allowed_pet_sorts, true) ? $_pet_sort_raw : 'recent';
+$allowed_pet_status = ['', 'available', 'adopted', 'removed'];
+$_pet_status_raw    = isset($_GET['pet_status']) ? $_GET['pet_status'] : '';
+$pet_status         = in_array($_pet_status_raw, $allowed_pet_status, true) ? $_pet_status_raw : '';
+
+// Users tab sort/filter params
+$allowed_user_sorts  = ['name_az', 'name_za', 'newest', 'oldest', 'points_desc', 'points_asc'];
+$user_sort           = in_array($_GET['user_sort'] ?? '', $allowed_user_sorts, true) ? ($_GET['user_sort'] ?? 'newest') : 'newest';
+$allowed_user_roles  = ['', 'user', 'moderator'];
+$user_role           = in_array($_GET['user_role'] ?? '', $allowed_user_roles, true) ? ($_GET['user_role'] ?? '') : '';
+$allowed_user_status = ['', 'active', 'banned'];
+$user_status_filter  = in_array($_GET['user_status'] ?? '', $allowed_user_status, true) ? ($_GET['user_status'] ?? '') : '';
+
 // Tab data
 $reports   = $tab === 'reports' ? $reportObj->getPending($sort, $reason) : [];
-$all_pets  = $tab === 'pets'    ? $petObj->getAllAdmin($_GET['q'] ?? '') : [];
+$all_pets  = $tab === 'pets'    ? $petObj->getAllAdmin($_GET['q'] ?? '', $pet_sort, $pet_status) : [];
 $mod_logs  = ($tab === 'logs' && is_admin()) ? $logObj->getAll() : [];
 $my_logs   = $tab === 'mylogs'  ? $logObj->getByMod($_SESSION['user_id']) : [];
-$all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '') : [];
+$all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '', $user_sort, $user_role, $user_status_filter) : [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,8 +94,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
             <a href="?tab=logs"  class="admin-tab <?= $tab==='logs'?'active':'' ?>">🔍 Activity Log</a>
             <?php endif; ?>
             <?php if (is_admin()): ?>
-              <!-- <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
-              <a href="backup.php" class="admin-tab">💾 Backup & Restore</a> -->
+              <a href="?tab=users" class="admin-tab <?= $tab==='users'?'active':'' ?>">👥 Users</a>
             <?php endif; ?>
           </div>
         </aside>
@@ -222,19 +237,77 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 
             <!-- TAB: ALL PETS -->
             <?php elseif ($tab === 'pets'): ?>
-              <form method="GET" class="search-admin">
-                <input type="hidden" name="tab" value="pets">
-                <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" placeholder="Search by name, breed, or owner…">
-                <button type="submit" class="btn btn-primary btn-sm">Search</button>
-              </form>
+              <?php
+                // Build base URL helper for pets tab links (preserves q and pet_status/pet_sort as needed)
+                $pets_q      = htmlspecialchars($_GET['q'] ?? '');
+                $pets_base   = '?tab=pets' . ($pets_q ? '&q='.urlencode($_GET['q'] ?? '') : '');
+
+                // Column sort helpers
+                $pet_next_az   = ($pet_sort === 'pet_az')   ? 'pet_za'   : 'pet_az';
+                $owner_next_az = ($pet_sort === 'owner_az') ? 'owner_za' : 'owner_az';
+                $posted_next   = ($pet_sort === 'recent')   ? 'oldest'   : 'recent';
+
+                // Arrow indicator
+                function sort_arrow($current, $asc, $desc) {
+                  if ($current === $asc)  return ' <span style="color:var(--primary)">▲</span>';
+                  if ($current === $desc) return ' <span style="color:var(--primary)">▼</span>';
+                  return ' <span style="color:var(--gray-5);font-size:10px">⇅</span>';
+                }
+
+                $status_labels = ['' => 'All', 'available' => '🟢 Available', 'adopted' => '💙 Adopted', 'removed' => '🔴 Removed'];
+              ?>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap">
+                <form method="GET" class="search-admin" style="margin:0;flex:1;min-width:200px">
+                  <input type="hidden" name="tab" value="pets">
+                  <input type="hidden" name="pet_sort" value="<?= htmlspecialchars($pet_sort) ?>">
+                  <input type="hidden" name="pet_status" value="<?= htmlspecialchars($pet_status) ?>">
+                  <input type="text" name="q" value="<?= $pets_q ?>" placeholder="Search by name, breed, or owner…" style="flex:1">
+                  <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                </form>
+
+                <!-- Status filter dropdown -->
+                <div class="sort-wrap">
+                  <button class="sort-btn" type="button">
+                    <span>Status: <?= $status_labels[$pet_status] ?></span>
+                    <span class="sort-arrow">▼</span>
+                  </button>
+                  <div class="sort-dropdown">
+                    <?php foreach ($status_labels as $val => $label): ?>
+                      <a href="<?= $pets_base ?>&pet_sort=<?= $pet_sort ?>&pet_status=<?= urlencode($val) ?>"
+                         class="sort-option <?= $pet_status === $val ? 'active' : '' ?>">
+                        <?= $label ?>
+                      </a>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+              </div>
+
               <div class="panel">
                 <table style="width:100%;border-collapse:collapse;font-size:13px">
                   <thead>
                     <tr style="background:var(--gray-6);text-align:left">
-                      <th style="padding:10px 12px">Pet</th>
-                      <th style="padding:10px 12px">Owner</th>
+                      <th style="padding:10px 12px">
+                        <a href="<?= $pets_base ?>&pet_sort=<?= $pet_next_az ?>&pet_status=<?= urlencode($pet_status) ?>"
+                           style="text-decoration:none;color:inherit;cursor:pointer;white-space:nowrap"
+                           title="Sort by pet name">
+                          Pet <?= sort_arrow($pet_sort, 'pet_az', 'pet_za') ?>
+                        </a>
+                      </th>
+                      <th style="padding:10px 12px">
+                        <a href="<?= $pets_base ?>&pet_sort=<?= $owner_next_az ?>&pet_status=<?= urlencode($pet_status) ?>"
+                           style="text-decoration:none;color:inherit;cursor:pointer;white-space:nowrap"
+                           title="Sort by owner name">
+                          Owner <?= sort_arrow($pet_sort, 'owner_az', 'owner_za') ?>
+                        </a>
+                      </th>
                       <th style="padding:10px 12px">Status</th>
-                      <th style="padding:10px 12px">Posted</th>
+                      <th style="padding:10px 12px">
+                        <a href="<?= $pets_base ?>&pet_sort=<?= $posted_next ?>&pet_status=<?= urlencode($pet_status) ?>"
+                           style="text-decoration:none;color:inherit;cursor:pointer;white-space:nowrap"
+                           title="Sort by date posted">
+                          Posted <?= sort_arrow($pet_sort, 'oldest', 'recent') ?>
+                        </a>
+                      </th>
                       <th style="padding:10px 12px">Actions</th>
                     </tr>
                   </thead>
@@ -465,20 +538,112 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 
             <!-- TAB: USERS (Admin only) -->
             <?php elseif ($tab === 'users' && is_admin()): ?>
-              <form method="GET" class="search-admin">
-                <input type="hidden" name="tab" value="users">
-                <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" placeholder="Search by name, username, or email…">
-                <button type="submit" class="btn btn-primary btn-sm">Search</button>
-              </form>
+              <?php
+                // Helper to build user tab URLs preserving all active filters
+                function user_url($overrides = []) {
+                  $base = array_merge([
+                    'tab'         => 'users',
+                    'q'           => $_GET['q'] ?? '',
+                    'user_sort'   => $_GET['user_sort'] ?? '',
+                    'user_role'   => $_GET['user_role'] ?? '',
+                    'user_status' => $_GET['user_status'] ?? '',
+                  ], $overrides);
+                  return '?' . http_build_query(array_filter($base, fn($v) => $v !== ''));
+                }
+                function user_sort_arrow($col, $current) {
+                  if ($current === $col.'_az' || $current === $col) return ' <span style="color:var(--primary)">▲</span>';
+                  if ($current === $col.'_za')                       return ' <span style="color:var(--primary)">▼</span>';
+                  return ' <span style="color:var(--gray-5)">↕</span>';
+                }
+                function date_sort_arrow($current) {
+                  if ($current === 'newest') return ' <span style="color:var(--primary)">▼</span>';
+                  if ($current === 'oldest') return ' <span style="color:var(--primary)">▲</span>';
+                  return ' <span style="color:var(--gray-5)">↕</span>';
+                }
+                function points_sort_arrow($current) {
+                  if ($current === 'points_desc') return ' <span style="color:var(--primary)">▼</span>';
+                  if ($current === 'points_asc')  return ' <span style="color:var(--primary)">▲</span>';
+                  return ' <span style="color:var(--gray-5)">↕</span>';
+                }
+              ?>
+
+              <!-- Search + Filter row -->
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+                <h2 style="font-size:18px;margin:0">All Users</h2>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+
+                  <!-- Search -->
+                  <form method="GET" style="display:flex;gap:6px;align-items:center">
+                    <input type="hidden" name="tab" value="users">
+                    <input type="hidden" name="user_sort"   value="<?= htmlspecialchars($user_sort) ?>">
+                    <input type="hidden" name="user_role"   value="<?= htmlspecialchars($user_role) ?>">
+                    <input type="hidden" name="user_status" value="<?= htmlspecialchars($user_status_filter) ?>">
+                    <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>"
+                           placeholder="Search name, username, email…"
+                           style="font-size:13px;padding:6px 10px;border:1px solid var(--gray-5);border-radius:8px;min-width:220px">
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                  </form>
+
+                  <!-- Role filter -->
+                  <div class="sort-wrap">
+                    <button class="sort-btn" type="button">
+                      <span>Role: <?= $user_role ? ucfirst($user_role) : 'All' ?></span>
+                      <span class="sort-arrow">▼</span>
+                    </button>
+                    <div class="sort-dropdown">
+                      <?php foreach ([''=>'All Roles','user'=>'User','moderator'=>'Moderator'] as $val=>$lbl): ?>
+                        <a href="<?= user_url(['user_role'=>$val]) ?>"
+                           class="sort-option <?= $user_role===$val?'active':'' ?>"><?= $lbl ?></a>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+
+                  <!-- Status filter -->
+                  <div class="sort-wrap">
+                    <button class="sort-btn" type="button">
+                      <span>Status: <?= $user_status_filter ? ucfirst($user_status_filter) : 'All' ?></span>
+                      <span class="sort-arrow">▼</span>
+                    </button>
+                    <div class="sort-dropdown">
+                      <?php foreach ([''=>'All Statuses','active'=>'Active','banned'=>'Banned'] as $val=>$lbl): ?>
+                        <a href="<?= user_url(['user_status'=>$val]) ?>"
+                           class="sort-option <?= $user_status_filter===$val?'active':'' ?>"><?= $lbl ?></a>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <?php if (!$all_users): ?>
+                <div class="empty-state"><div class="empty-icon">👥</div><p>No users found.</p></div>
+              <?php else: ?>
               <div class="panel">
                 <table style="width:100%;border-collapse:collapse;font-size:13px">
                   <thead>
                     <tr style="background:var(--gray-6);text-align:left">
-                      <th style="padding:10px 12px">User</th>
+                      <?php
+                        $name_next   = ($user_sort === 'name_az')     ? 'name_za'     : 'name_az';
+                        $date_next   = ($user_sort === 'newest')       ? 'oldest'      : 'newest';
+                        $points_next = ($user_sort === 'points_desc')  ? 'points_asc'  : 'points_desc';
+                      ?>
+                      <th style="padding:10px 12px">
+                        <a href="<?= user_url(['user_sort'=>$name_next]) ?>" style="color:inherit;text-decoration:none;white-space:nowrap">
+                          User<?= user_sort_arrow('name', $user_sort) ?>
+                        </a>
+                      </th>
                       <th style="padding:10px 12px">Role</th>
-                      <th style="padding:10px 12px">Points</th>
+                      <th style="padding:10px 12px">
+                        <a href="<?= user_url(['user_sort'=>$points_next]) ?>" style="color:inherit;text-decoration:none;white-space:nowrap">
+                          Points<?= points_sort_arrow($user_sort) ?>
+                        </a>
+                      </th>
                       <th style="padding:10px 12px">Status</th>
-                      <th style="padding:10px 12px">Joined</th>
+                      <th style="padding:10px 12px">
+                        <a href="<?= user_url(['user_sort'=>$date_next]) ?>" style="color:inherit;text-decoration:none;white-space:nowrap">
+                          Joined<?= date_sort_arrow($user_sort) ?>
+                        </a>
+                      </th>
                       <th style="padding:10px 12px">Actions</th>
                     </tr>
                   </thead>
@@ -542,6 +707,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                   </tbody>
                 </table>
               </div>
+              <?php endif; ?>
             <?php endif; ?>
           </main>
         </div>

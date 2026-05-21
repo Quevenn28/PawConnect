@@ -198,7 +198,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                 <div class="report-body">
                   <h4><?= htmlspecialchars($r['pet_name']) ?></h4>
                   <div class="report-meta">
-                    Owner: <strong><?= htmlspecialchars($r['owner_name']) ?></strong> (@<?= htmlspecialchars($r['owner_username']) ?>)
+                    Rehomer: <strong><?= htmlspecialchars($r['owner_name']) ?></strong> (@<?= htmlspecialchars($r['owner_username']) ?>)
                     · Reported by: <strong><?= htmlspecialchars($r['reporter_name']) ?></strong>
                     · <?= date('M j, Y g:ia', strtotime($r['created_at'])) ?>
                   </div>
@@ -261,7 +261,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                   <input type="hidden" name="tab" value="pets">
                   <input type="hidden" name="pet_sort" value="<?= htmlspecialchars($pet_sort) ?>">
                   <input type="hidden" name="pet_status" value="<?= htmlspecialchars($pet_status) ?>">
-                  <input type="text" name="q" value="<?= $pets_q ?>" placeholder="Search by name, breed, or owner…" style="flex:1">
+                  <input type="text" name="q" value="<?= $pets_q ?>" placeholder="Search by name, breed, or rehomer…" style="flex:1">
                   <button type="submit" class="btn btn-primary btn-sm">Search</button>
                 </form>
 
@@ -297,7 +297,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                         <a href="<?= $pets_base ?>&pet_sort=<?= $owner_next_az ?>&pet_status=<?= urlencode($pet_status) ?>"
                            style="text-decoration:none;color:inherit;cursor:pointer;white-space:nowrap"
                            title="Sort by owner name">
-                          Owner <?= sort_arrow($pet_sort, 'owner_az', 'owner_za') ?>
+                          Rehomer <?= sort_arrow($pet_sort, 'owner_az', 'owner_za') ?>
                         </a>
                       </th>
                       <th style="padding:10px 12px">Status</th>

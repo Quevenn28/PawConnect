@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             award_points($pdo, $_SESSION['user_id'], PTS_POST_PET, 'Posted pet for adoption: '.$name, 'general');
             flash('success', 'Your pet listing is live!');
-            header("Location: ../users/index.php");
+            header("Location: ../pets/index.php");
             exit;
         }
     }

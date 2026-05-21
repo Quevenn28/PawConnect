@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
-    "scrollLeft": -800,
-    "zoomLevel": 1,
+    "scrollTop": -895.5975,
+    "scrollLeft": -84.5173,
+    "zoomLevel": 0.61,
     "show": 431,
     "database": 4,
     "databaseName": "",
@@ -378,15 +378,15 @@
           "gbdrRG77OaampencLfqS_"
         ],
         "ui": {
-          "x": 1245,
-          "y": 138,
+          "x": 1198.1147,
+          "y": 60.5574,
           "zIndex": 2,
           "widthName": 68,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1779330250315,
+          "updateAt": 1779361042079,
           "createAt": 1779330207659
         }
       }

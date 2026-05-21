@@ -4,6 +4,15 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Auto-dismiss success alerts after 4 seconds (runs on all pages)
+    document.querySelectorAll('.alert-success.auto-dismiss').forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.3s ease-out';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 4000);
+    });
+    
     // Get sidebar wrapper
     const sidebar = document.querySelector('.sidebar-wrapper');
     
@@ -56,13 +65,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768 && sidebar) {
         sidebar.classList.add('collapsed');
     }
-    
-    // Auto-dismiss success alerts after 4 seconds
-    document.querySelectorAll('.alert-success.auto-dismiss').forEach(alert => {
-        setTimeout(() => {
-            alert.style.transition = 'opacity 0.3s ease-out';
-            alert.style.opacity = '0';
-            setTimeout(() => alert.remove(), 300);
-        }, 4000);
-    });
 });

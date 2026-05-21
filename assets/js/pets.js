@@ -71,6 +71,15 @@ function hideReportForm() {
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss success alerts after 4 seconds (MUST run first, before sidebar check)
+    document.querySelectorAll('.alert-success.auto-dismiss').forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.3s ease-out';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 4000);
+    });
+    
     // For create page - check if previewPhoto function is needed
     const photoInput = document.getElementById('photoInput');
     if (photoInput && window.location.pathname.includes('create.php')) {

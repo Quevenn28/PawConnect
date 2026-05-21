@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <p>Sign in to your PawConnect account</p>
     </div>
 
-    <?php if ($error): ?>
+    <?php if ($error && !str_contains($error, 'suspended')): ?>
       <div class="alert alert-error"><?= $error ?></div>
     <?php endif; ?>
 

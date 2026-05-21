@@ -340,7 +340,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="type" value="restore_pet">
                             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                            <button class="btn btn-green btn-sm">♻️ Restore</button>
+                            <button class="btn btn-green btn-sm restore-pet-btn" data-name="<?= htmlspecialchars($pet['name']) ?>">♻️ Restore</button>
                           </form>
                           <form method="POST" action="../../controllers/admin/undo.php" style="display:inline">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">

@@ -105,11 +105,13 @@ class Report {
     }
 
     /**
-     * Check if a user already reported this pet.
+     * Check if a user has an active (pending) report for this pet.
+     * Allows re-reporting if the previous report was dismissed or the post was restored.
      */
     public function hasReported(int $pet_id, int $user_id): bool {
+        // Only block if there's a PENDING report — dismissed or removed reports don't block new reports
         $stmt = $this->pdo->prepare("
-            SELECT id FROM reports WHERE pet_id=? AND reporter_id=?
+            SELECT id FROM reports WHERE pet_id=? AND reporter_id=? AND status='pending'
         ");
         $stmt->execute([$pet_id, $user_id]);
         return (bool) $stmt->fetch();

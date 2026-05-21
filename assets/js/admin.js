@@ -229,6 +229,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Restore pet confirmation
+    document.querySelectorAll('.restore-pet-btn').forEach(btn => {
+        btn.closest('form').addEventListener('submit', e => {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Restore this post?',
+                text: 'Restore "' + btn.dataset.name + '" to available? It will be visible again.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, restore',
+                confirmButtonColor: '#10b981'
+            }).then(result => {
+                if (result.isConfirmed) btn.closest('form').submit();
+            });
+        });
+    });
+    
     // Undo action confirmation
     document.querySelectorAll('.undo-form').forEach(form => {
         form.addEventListener('submit', e => {

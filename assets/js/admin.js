@@ -47,16 +47,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to show alert messages
     function showAlert(message, isSuccess = true) {
         const alertDiv = document.createElement('div');
-        alertDiv.className = isSuccess ? 'alert alert-success' : 'alert alert-error';
+        if (isSuccess) {
+            alertDiv.className = 'alert alert-success overlay';
+        } else {
+            alertDiv.className = 'alert alert-error overlay';
+        }
         alertDiv.textContent = message;
-        const adminWrap = document.querySelector('.admin-wrap');
-        if (adminWrap) {
-            if (adminWrap.firstChild) {
-                adminWrap.insertBefore(alertDiv, adminWrap.firstChild);
-            } else {
-                adminWrap.appendChild(alertDiv);
-            }
-            setTimeout(() => alertDiv.remove(), 5000);
+        document.body.appendChild(alertDiv);
+        
+        // Auto-dismiss success alerts after 4 seconds
+        if (isSuccess) {
+            setTimeout(() => {
+                alertDiv.style.transition = 'opacity 0.3s ease-out';
+                alertDiv.style.opacity = '0';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 4000);
         }
     }
     

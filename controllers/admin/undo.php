@@ -20,6 +20,9 @@ try {
         $petObj->restore($pet_id);
         $logObj->log($_SESSION['user_id'], ModLog::ACTION_RESTORED_POST, 'pet', $pet_id, 'Admin restored post');
         award_points($pdo, $_SESSION['user_id'], PTS_ADMIN_ACTION, 'Restored a removed post', 'mod');
+        
+        // Flash success message
+        flash('success', '✅ Post restored successfully and is now visible again.');
 
     } elseif ($type === 'hard_delete') {
         $pet_id = (int)($_POST['pet_id'] ?? 0);
@@ -29,6 +32,9 @@ try {
         $petObj->hardDelete($pet_id);
         $logObj->log($_SESSION['user_id'], ModLog::ACTION_DELETED_POST, 'pet', $pet_id, 'Admin permanently deleted');
         award_points($pdo, $_SESSION['user_id'], PTS_ADMIN_ACTION, 'Permanently deleted a post', 'mod');
+        
+        // Flash success message
+        flash('success', '🗑️ Post permanently deleted.');
 
     } elseif ($type === 'undo_log') {
         $log_id = (int)($_POST['log_id'] ?? 0);

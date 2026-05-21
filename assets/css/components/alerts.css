@@ -28,6 +28,24 @@
     border: 1px solid #93c5fd;
 }
 
+/* Overlay alert style - fixed position, centered, doesn't shift content */
+.alert.overlay,
+.alert-success.auto-dismiss {
+    position: fixed !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    padding: 14px 24px !important;
+    max-width: 90% !important;
+    width: auto !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    line-height: 1.5 !important;
+}
+
 .flash-notice-wrap {
     max-width: 1100px;
     margin: 16px auto;
@@ -36,6 +54,17 @@
 
 .flash-notice-wrap .alert {
     margin-bottom: 12px;
+}
+
+/* Override flash-notice-wrap styling for auto-dismiss alerts */
+.flash-notice-wrap .alert-success.auto-dismiss {
+    position: fixed !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    width: auto !important;
 }
 
 /* Ban alert — more prominent */

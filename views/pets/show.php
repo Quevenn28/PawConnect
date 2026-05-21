@@ -74,10 +74,10 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 <div class="pet-detail-wrap">
 
   <?php if (isset($_GET['requested'])): ?>
-    <div class="alert alert-success">✓ Your adoption request has been sent! The rehomer will contact you soon. 🐾</div>
+    <div class="alert alert-success auto-dismiss">✓ Your adoption request has been sent! The rehomer will contact you soon. 🐾</div>
   <?php endif; ?>
   <?php if (isset($_GET['reported'])): ?>
-    <div class="alert alert-success">✓ Report submitted. Our moderators will review it shortly.</div>
+    <div class="alert alert-success auto-dismiss">✓ Report submitted. Our moderators will review it shortly.</div>
   <?php endif; ?>
   <?php if (isset($_GET['error'])): ?>
     <div class="alert alert-error"><?= htmlspecialchars($_GET['error']) ?></div>

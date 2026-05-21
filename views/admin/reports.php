@@ -44,7 +44,7 @@ $sort_labels = [
   </div>
 
   <?php if ($success): ?>
-    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+    <div class="alert alert-success auto-dismiss">✅ <?= htmlspecialchars($success) ?></div>
   <?php endif; ?>
   <?php if ($error === 'own_post'): ?>
     <div class="alert alert-error">⚠️ You cannot moderate your own pet listing.</div>

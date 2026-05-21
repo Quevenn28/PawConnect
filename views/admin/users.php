@@ -30,7 +30,7 @@ $error   = $_GET['error']   ?? '';
     <a href="dashboard.php" class="btn btn-gray btn-sm">← Back to Panel</a>
   </div>
 
-  <?php if ($success): ?><div class="alert alert-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+  <?php if ($success): ?><div class="alert alert-success auto-dismiss">✅ <?= htmlspecialchars($success) ?></div><?php endif; ?>
   <?php if ($error):   ?><div class="alert alert-error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
   <!-- Search -->

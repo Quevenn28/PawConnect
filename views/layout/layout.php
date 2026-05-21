@@ -55,7 +55,9 @@ function render_flash() {
     echo '<div class="flash-notice-wrap">';
     foreach ($messages as $msg) {
         $type = $msg['type'] === 'error' ? 'alert-error' : ($msg['type'] === 'success' ? 'alert-success' : 'alert-info');
-        echo '<div class="alert ' . $type . '">' . htmlspecialchars($msg['message']) . '</div>';
+        // Add auto-dismiss class to success alerts for consistency
+        $extra_class = $msg['type'] === 'success' ? ' auto-dismiss' : '';
+        echo '<div class="alert ' . $type . $extra_class . '">' . htmlspecialchars($msg['message']) . '</div>';
     }
     echo '</div>';
 }

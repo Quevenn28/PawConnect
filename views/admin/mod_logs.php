@@ -33,7 +33,7 @@ $success = $_GET['success'] ?? '';
     <a href="dashboard.php" class="btn btn-gray btn-sm">← Back to Panel</a>
   </div>
 
-  <?php if ($success): ?><div class="alert alert-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+  <?php if ($success): ?><div class="alert alert-success auto-dismiss">✅ <?= htmlspecialchars($success) ?></div><?php endif; ?>
 
   <?php if (!$logs): ?>
     <div class="empty-state"><div class="empty-icon">📋</div><p>No moderation activity yet.</p></div>

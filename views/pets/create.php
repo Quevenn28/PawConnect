@@ -29,6 +29,7 @@ require_once '../../controllers/pets/create.php';
 
     <form method="POST" enctype="multipart/form-data">
       <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+      <input type="hidden" name="referrer" value="<?= htmlspecialchars($_POST['referrer'] ?? $_SERVER['HTTP_REFERER'] ?? '../users/index.php') ?>">
 
       <div class="form-section">Basic Info</div>
       <div class="form-row">
@@ -117,7 +118,7 @@ require_once '../../controllers/pets/create.php';
       </div>
 
       <div style="display:flex;gap:10px;margin-top:8px">
-        <a href="../users/index.php" class="btn btn-gray">Cancel</a>
+        <a href="<?= htmlspecialchars($_POST['referrer'] ?? $_SERVER['HTTP_REFERER'] ?? '../users/index.php') ?>" class="btn btn-gray">Cancel</a>
         <button type="submit" class="btn btn-primary">🐾 List Pet for Adoption</button>
       </div>
     </form>

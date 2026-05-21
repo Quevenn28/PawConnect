@@ -330,7 +330,56 @@ $adopter_title  = get_adopter_title($adopter_points);
                     <div class="notification-meta">
                       <span><?= date('M j, Y H:i', strtotime($note['created_at'])) ?></span>
                       <?php if ($note['link']): ?>
-                        <a href="<?= htmlspecialchars($note['link']) ?>" class="notification-link">View</a>
+                        <?php
+                          // Detect adoption-request notifications
+                          $is_request_notif = strpos($note['link'], 'requests') !== false
+                                           || strpos($note['link'], 'request_id') !== false
+                                           || strpos($note['message'], 'adoption request') !== false
+                                           || strpos($note['message'], 'wants to adopt') !== false
+                                           || strpos($note['message'], 'approved') !== false
+                                           || strpos($note['message'], 'rejected') !== false;
+
+                          // Fetch pet status from DB
+                          $pet_status = null;
+                          $pet_encoded_id = null;
+                          if (preg_match('/id=([a-zA-Z0-9_-]+)/', $note['link'], $m)) {
+                            $pet_encoded_id = $m[1];
+                            $pet_id_raw = decode_id($m[1]);
+                            $chk = $pdo->prepare("SELECT status FROM pets WHERE id = ?");
+                            $chk->execute([$pet_id_raw]);
+                            $row = $chk->fetch();
+                            $pet_status = $row ? $row['status'] : null; // null = deleted from DB
+                          }
+
+                          // Rules:
+                          // Pet post, removed/null        → no button
+                          // Pet post, available or adopted → View → pet page
+                          // Request notif, removed/null   → no button
+                          // Request notif, adopted        → View → pet show page
+                          // Request notif, available      → View → requests tab
+                          $show_view   = false;
+                          $view_target = '#';
+
+                          if (!$is_request_notif) {
+                            if ($pet_status === 'available' || $pet_status === 'adopted') {
+                              $show_view   = true;
+                              $view_target = htmlspecialchars($note['link']);
+                            }
+                            // removed or null → no button
+                          } else {
+                            if ($pet_status === 'available') {
+                              $show_view   = true;
+                              $view_target = 'https://paw-connect.it208.2025.ccsit.info/views/users/index.php?section=requests';
+                            } elseif ($pet_status === 'adopted') {
+                              $show_view   = true;
+                              $view_target = 'https://paw-connect.it208.2025.ccsit.info/views/pets/show.php?id=' . htmlspecialchars($pet_encoded_id);
+                            }
+                            // removed or null → no button
+                          }
+                        ?>
+                        <?php if ($show_view): ?>
+                          <a href="<?= $view_target ?>" class="notification-link">View</a>
+                        <?php endif; ?>
                       <?php endif; ?>
                     </div>
                   </div>

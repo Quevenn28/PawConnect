@@ -32,6 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
             showSection(sectionParam);
         }
         
+        // Handle hash-based navigation (for notification links)
+        if (window.location.hash) {
+            const hashSection = window.location.hash.substring(1);
+            if (document.getElementById(hashSection)) {
+                showSection(hashSection);
+                window.history.replaceState({ section: hashSection }, '', `${window.location.pathname}?section=${hashSection}`);
+            }
+        }
+        
         // Handle sidebar clicks
         dashboardLinks.forEach(link => {
             link.addEventListener('click', (e) => {

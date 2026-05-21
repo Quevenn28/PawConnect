@@ -24,6 +24,7 @@ class AdoptionRequest {
     /**
      * Get all PENDING requests for pets owned by a user.
      * Includes requester's profile photo, username, and points for badges.
+     * Excludes requests for deleted pets.
      */
     public function getPendingForOwner(int $owner_id): array {
         $stmt = $this->pdo->prepare("
@@ -36,6 +37,7 @@ class AdoptionRequest {
             JOIN pets  p ON p.id = ar.pet_id
             WHERE p.user_id = ?
             AND ar.status = 'pending'
+            AND p.status != 'removed'
             ORDER BY ar.created_at DESC
         ");
         $stmt->execute([$owner_id]);
@@ -44,7 +46,7 @@ class AdoptionRequest {
 
     /**
      * Get all requests sent by a user (their own dashboard).
-     * Excludes soft-deleted requests.
+     * Excludes soft-deleted requests and deleted pets.
      */
     public function getSentByUser(int $user_id): array {
         $stmt = $this->pdo->prepare("
@@ -57,6 +59,7 @@ class AdoptionRequest {
             JOIN users u ON u.id = p.user_id
             WHERE ar.requester_id = ?
               AND ar.status != 'deleted'
+              AND p.status != 'removed'
             ORDER BY ar.created_at DESC
         ");
         $stmt->execute([$user_id]);

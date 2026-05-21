@@ -208,10 +208,13 @@ class Pet {
 
     /**
      * Soft delete by user — sets status to 'removed', records who removed it.
+     * @param int $pet_id The pet to remove
+     * @param int $user_id The user removing the pet (their ID will be stored)
+     * @param string $removal_type 'user' if owner is removing their own pet, 'admin' otherwise (skips ownership check)
      */
-    public function softDelete(int $pet_id, int $user_id, string $removed_by = 'user'): bool {
-        // Verify ownership if removed_by is 'user'
-        if ($removed_by === 'user') {
+    public function softDelete(int $pet_id, int $user_id, string $removal_type = 'user'): bool {
+        // Verify ownership if removal_type is 'user'
+        if ($removal_type === 'user') {
             $stmt = $this->pdo->prepare(
                 "SELECT id FROM pets WHERE id=? AND user_id=?"
             );
@@ -219,11 +222,12 @@ class Pet {
             if (!$stmt->fetch()) return false;
         }
 
+        // Store the actual user ID (not a role string) in the removed_by field
         $this->pdo->prepare("
             UPDATE pets
             SET status='removed', removed_by=?, removed_at=NOW()
             WHERE id=?
-        ")->execute([$removed_by, $pet_id]);
+        ")->execute([$user_id, $pet_id]);
 
         return true;
     }
@@ -241,10 +245,17 @@ class Pet {
 
     /**
      * Admin only: Hard delete — permanently removes from DB.
+     * Deletes related records first to handle foreign key constraints.
      */
     public function hardDelete(int $pet_id): void {
-        $this->pdo->prepare("DELETE FROM pets WHERE id=?")
-                  ->execute([$pet_id]);
+        // Delete related reports first (foreign key constraint)
+        $this->pdo->prepare("DELETE FROM reports WHERE pet_id=?")->execute([$pet_id]);
+        // Delete related adoption requests
+        $this->pdo->prepare("DELETE FROM adoption_requests WHERE pet_id=?")->execute([$pet_id]);
+        // Delete related adoptions log
+        $this->pdo->prepare("DELETE FROM adoptions WHERE pet_id=?")->execute([$pet_id]);
+        // Now delete the pet
+        $this->pdo->prepare("DELETE FROM pets WHERE id=?")->execute([$pet_id]);
     }
 
     // ----------------------------------------------------------

@@ -517,16 +517,38 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                       <td style="padding:10px 12px">
                         <?php if ($log['undone']): ?>
                           <span style="color:var(--gray-4);font-size:12px">↩️ Undone by <?= htmlspecialchars($log['undone_by_name'] ?? 'admin') ?></span>
-                        <?php elseif ($log['target_type'] === 'pet' && !$log['undone']): ?>
-                          <form method="POST" action="../../controllers/admin/undo.php" class="undo-form" data-label="<?= htmlspecialchars(ModLog::actionLabel($log['action'])) ?>">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="type" value="undo_log">
-                            <input type="hidden" name="log_id" value="<?= $log['id'] ?>">
-                            <input type="hidden" name="pet_id" value="<?= $log['target_id'] ?>">
-                            <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:none">↩️ Undo</button>
-                          </form>
                         <?php else: ?>
-                          <span style="color:var(--gray-5);font-size:12px">—</span>
+                          <?php
+                            // Get the most recent non-undone action for this pet
+                            $most_recent_stmt = $pdo->prepare("
+                              SELECT id, action FROM mod_logs 
+                              WHERE target_type='pet' 
+                                AND target_id=? 
+                                AND undone=0
+                              ORDER BY id DESC
+                              LIMIT 1
+                            ");
+                            $most_recent_stmt->execute([$log['target_id']]);
+                            $most_recent_log = $most_recent_stmt->fetch();
+                            
+                            // Show undo button ONLY if:
+                            // 1. This log is the most recent action for this pet
+                            // 2. The most recent action is a removed_post (the only undoable action)
+                            $show_undo = $most_recent_log && 
+                                        $most_recent_log['id'] == $log['id'] && 
+                                        $most_recent_log['action'] === 'removed_post';
+                          ?>
+                          <?php if ($show_undo): ?>
+                            <form method="POST" action="../../controllers/admin/undo.php" class="undo-form" data-label="<?= htmlspecialchars(ModLog::actionLabel($log['action'])) ?>">
+                              <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                              <input type="hidden" name="type" value="undo_log">
+                              <input type="hidden" name="log_id" value="<?= $log['id'] ?>">
+                              <input type="hidden" name="pet_id" value="<?= $log['target_id'] ?>">
+                              <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:none">↩️ Undo</button>
+                            </form>
+                          <?php else: ?>
+                            <span style="color:var(--gray-5);font-size:12px">—</span>
+                          <?php endif; ?>
                         <?php endif; ?>
                       </td>
                     </tr>

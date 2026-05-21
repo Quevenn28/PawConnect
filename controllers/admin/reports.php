@@ -32,7 +32,7 @@ header('Content-Type: application/json');
 
 if ($action === 'remove') {
     $reportObj->markRemoved($report_id, $_SESSION['user_id']);
-    $petObj->softDelete($pet_id, $_SESSION['user_id'], get_role());
+    $petObj->softDelete($pet_id, $_SESSION['user_id'], 'admin');
 
     $notif = new Notification($pdo);
     $notif->create(

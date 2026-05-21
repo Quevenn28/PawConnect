@@ -100,7 +100,8 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
   <?php endif; ?>
 
   <div class="pet-detail-grid">
-    <div>
+    <!-- Left: Pet Photo -->
+    <div class="pet-detail-photo">
       <?php if ($pet['photo']): ?>
         <div class="pet-detail-img">
           <img src="../../uploads/pets/<?= htmlspecialchars($pet['photo']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>" id="petPhoto">
@@ -110,7 +111,8 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
       <?php endif; ?>
     </div>
 
-    <div>
+    <!-- Middle: Main Pet Info -->
+    <div class="pet-detail-info">
       <div style="display:inline-block;background:#fff7ed;border:1px solid #fed7aa;border-radius:99px;padding:3px 14px;font-size:12px;font-weight:700;color:#f97316;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">
         <?= htmlspecialchars($pet['species']) ?>
       </div>
@@ -138,7 +140,10 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
         <p><?= nl2br(htmlspecialchars($pet['description'])) ?></p>
       </div>
       <?php endif; ?>
+    </div>
 
+    <!-- Right: Sidebar (Contact, Adoption, Report) -->
+    <div class="pet-detail-sidebar">
       <!-- Rehomer Card - Address and contact info only if pet is available -->
       <div class="owner-card">
         <div class="owner-card-top">
@@ -219,11 +224,11 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 
       <!-- Report button - Only show if pet is available and user is not the rehomer -->
       <?php if ($pet['status'] === 'available' && is_logged_in() && $_SESSION['user_id'] != $pet['user_id']): ?>
-        <div style="margin-top:16px;text-align:right">
+        <div style="margin-top:16px;text-align:center">
           <?php if ($already_reported): ?>
             <span style="font-size:12px;color:var(--gray-4)">✓ You've already reported this listing.</span>
           <?php else: ?>
-            <button onclick="showReportForm()" class="btn btn-gray btn-sm" style="font-size:12px">🚩 Report this listing</button>
+            <button onclick="showReportForm()" class="btn btn-gray btn-sm w-full" style="font-size:12px">🚩 Report this listing</button>
           <?php endif; ?>
         </div>
 
@@ -253,7 +258,6 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
           </form>
         </div>
       <?php endif; ?>
-
     </div>
   </div>
 </div>

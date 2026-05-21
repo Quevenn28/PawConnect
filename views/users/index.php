@@ -238,10 +238,11 @@ $adopter_title  = get_adopter_title($adopter_points);
                 <?php endif; ?>
               </div>
 
-              <?php if ($my_reqs): ?>
+              <?php $pending_reqs = array_filter($my_reqs, fn($r) => $r['status'] === 'pending'); ?>
+              <?php if ($pending_reqs): ?>
                 <div class="panel">
                   <div class="panel-header"><h2>📋 My Adoption Requests</h2></div>
-                  <?php foreach ($my_reqs as $r): ?>
+                  <?php foreach ($pending_reqs as $r): ?>
                   <div class="my-request-row">
                     <div class="req-thumb">
                       <?php if ($r['photo']): ?>
@@ -255,14 +256,6 @@ $adopter_title  = get_adopter_title($adopter_points);
                         <?= htmlspecialchars($r['pet_name']) ?>
                       </a>
                       <span class="req-badge req-<?= $r['status'] ?>"><?= ucfirst($r['status']) ?></span>
-                      <?php if ($r['status'] === 'approved'): ?>
-                        <div class="contact-chips" style="margin-top:6px">
-                          <span style="font-size:12px;color:var(--gray-4)">Owner:</span>
-                          <?php if ($r['owner_phone']): ?><a href="tel:<?= htmlspecialchars($r['owner_phone']) ?>" class="chip">📞 <?= htmlspecialchars($r['owner_phone']) ?></a><?php endif; ?>
-                          <a href="mailto:<?= htmlspecialchars($r['owner_email']) ?>" class="chip">✉️ Email</a>
-                          <?php if ($r['owner_fb']): ?><a href="<?= htmlspecialchars($r['owner_fb']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
-                        </div>
-                      <?php endif; ?>
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
                       <div style="display:flex;gap:6px;">

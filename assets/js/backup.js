@@ -4,47 +4,69 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Restore from existing backup confirmation
-    document.querySelectorAll('.restore-form').forEach(form => {
-        form.addEventListener('submit', (e) => {
+    // Create backup confirmation
+    var backupForms = document.querySelectorAll('.backup-create-form');
+    backupForms.forEach(function(form) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const filename = form.dataset.file;
+            Swal.fire({
+                title: 'Create Database Backup?',
+                text: 'This may take a few seconds while the backup is created.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, create backup',
+                confirmButtonColor: '#2563eb',
+                cancelButtonText: 'Cancel'
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+    
+    // Restore from existing backup confirmation
+    var restoreForms = document.querySelectorAll('.restore-form');
+    restoreForms.forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var filename = form.dataset.file;
             Swal.fire({
                 title: 'Restore Database?',
-                text: `Restore from "${filename}"? This will overwrite your current database and CANNOT be undone!`,
+                text: 'Restore from "' + filename + '"? This will overwrite your current database and CANNOT be undone!',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, restore it',
                 confirmButtonColor: '#dc2626',
                 cancelButtonText: 'Cancel'
-            }).then(result => {
+            }).then(function(result) {
                 if (result.isConfirmed) form.submit();
             });
         });
     });
     
     // Delete backup confirmation
-    document.querySelectorAll('.delete-backup-form').forEach(form => {
-        form.addEventListener('submit', (e) => {
+    var deleteForms = document.querySelectorAll('.delete-backup-form');
+    deleteForms.forEach(function(form) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const filename = form.dataset.file;
+            var filename = form.dataset.file;
             Swal.fire({
                 title: 'Delete Backup?',
-                text: `Delete "${filename}"? This cannot be undone.`,
+                text: 'Delete "' + filename + '"? This cannot be undone.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, delete',
                 confirmButtonColor: '#dc2626',
                 cancelButtonText: 'Cancel'
-            }).then(result => {
+            }).then(function(result) {
                 if (result.isConfirmed) form.submit();
             });
         });
     });
     
     // Upload and restore confirmation
-    document.querySelectorAll('.upload-restore-form').forEach(form => {
-        form.addEventListener('submit', (e) => {
+    var uploadForms = document.querySelectorAll('.upload-restore-form');
+    uploadForms.forEach(function(form) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             Swal.fire({
                 title: 'Restore from Upload?',
@@ -54,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'Yes, restore',
                 confirmButtonColor: '#dc2626',
                 cancelButtonText: 'Cancel'
-            }).then(result => {
+            }).then(function(result) {
                 if (result.isConfirmed) form.submit();
             });
         });

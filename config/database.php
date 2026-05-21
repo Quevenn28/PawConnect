@@ -1,4 +1,8 @@
+
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// rest of your file...
 // ============================================================
 //  config/database.php
 //  Database connection + all global helper functions
@@ -50,6 +54,28 @@ try {
         }
     } catch (PDOException $e) {
         // Ignore if the users table does not exist yet or schema cannot be altered.
+    }
+
+    // Create backup_logs table if it doesn't exist
+    try {
+        $tableExists = $pdo->query("SHOW TABLES LIKE 'backup_logs'")->fetch();
+        if (!$tableExists) {
+            $pdo->exec("
+                CREATE TABLE backup_logs (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    filename VARCHAR(255) NOT NULL,
+                    filepath VARCHAR(500),
+                    filesize INT,
+                    action_type ENUM('backup', 'restore') DEFAULT 'backup',
+                    created_by INT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    deleted_at DATETIME NULL,
+                    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+                )
+            ");
+        }
+    } catch (PDOException $e) {
+        // Ignore if the table cannot be created.
     }
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());

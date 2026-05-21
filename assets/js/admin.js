@@ -349,24 +349,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ============================================================
-    // SORT DROPDOWN TOGGLE (Reports page)
+    // DROPDOWN TOGGLES (Sort & Reason filters)
     // ============================================================
     
+    // Get all dropdown elements
     const sortWrap = document.getElementById('sortWrap');
     const sortToggle = document.getElementById('sortToggle');
+    const reasonWrap = document.getElementById('reasonWrap');
+    const reasonToggle = document.getElementById('reasonToggle');
     
+    // Sort dropdown click handler
     if (sortToggle) {
         sortToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             sortWrap.classList.toggle('open');
+            if (reasonWrap) reasonWrap.classList.remove('open');
         });
     }
     
-    if (sortWrap) {
-        document.addEventListener('click', () => {
-            sortWrap.classList.remove('open');
+    // Reason dropdown click handler
+    if (reasonToggle) {
+        reasonToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            reasonWrap.classList.toggle('open');
+            if (sortWrap) sortWrap.classList.remove('open');
         });
     }
+    
+    // Close dropdowns when clicking elsewhere
+    document.addEventListener('click', () => {
+        if (sortWrap) sortWrap.classList.remove('open');
+        if (reasonWrap) reasonWrap.classList.remove('open');
+    });
     
     // ============================================================
     // REPORT ACTION CONFIRMATIONS (Reports page)

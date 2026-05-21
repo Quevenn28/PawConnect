@@ -301,7 +301,7 @@
 .sort-wrap {
     position: relative;
     display: inline-block;
-    min-width: 180px;
+    width: 220px;
 }
 
 .sort-btn {

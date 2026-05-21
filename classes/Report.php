@@ -36,14 +36,24 @@ class Report {
     /**
      * Get all pending reports for the moderation panel.
      * $sort: 'recent' | 'oldest' | 'most_reported'
+     * $reason: filter by report reason (empty string = all reasons)
      */
-    public function getPending(string $sort = 'recent'): array {
+    public function getPending(string $sort = 'recent', string $reason = ''): array {
         $order = match($sort) {
             'oldest'       => 'r.created_at ASC',
             'most_reported'=> 'report_count DESC, r.created_at DESC',
             default        => 'r.created_at DESC',
         };
-        return $this->pdo->query("
+        
+        $where = "WHERE r.status = 'pending'";
+        $params = [];
+        
+        if ($reason !== '') {
+            $where .= " AND r.reason = ?";
+            $params[] = $reason;
+        }
+        
+        $query = "
             SELECT r.*,
                    p.name AS pet_name, p.photo AS pet_photo,
                    p.species, p.status AS pet_status,
@@ -56,9 +66,13 @@ class Report {
             JOIN pets  p ON p.id = r.pet_id
             JOIN users u ON u.id = r.reporter_id
             JOIN users o ON o.id = p.user_id
-            WHERE r.status = 'pending'
+            $where
             ORDER BY $order
-        ")->fetchAll();
+        ";
+        
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
     /**

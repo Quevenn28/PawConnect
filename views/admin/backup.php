@@ -84,9 +84,9 @@ $logs = $logs->fetchAll();
                                 <h2>💾 Database Backup</h2>
                             </div>
                             
-                            <form method="POST" action="../../controllers/admin/backup.php?action=create" style="display: inline;">
+                            <form method="POST" action="../../controllers/admin/backup.php?action=create" style="display: inline;" class="backup-create-form">
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                <button type="submit" class="btn btn-primary" onclick="return confirm('Create a new database backup? This may take a few seconds.')">
+                                <button type="submit" class="btn btn-primary">
                                     🔄 Create Backup Now
                                 </button>
                             </form>

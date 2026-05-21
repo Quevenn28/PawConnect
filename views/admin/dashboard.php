@@ -15,6 +15,10 @@ $tab = $_GET['tab'] ?? 'reports';
 $allowed_sorts = ['recent', 'oldest', 'most_reported'];
 $sort = in_array($_GET['sort'] ?? '', $allowed_sorts) ? $_GET['sort'] : 'recent';
 
+// Filter by reason
+$reason = isset($_GET['reason']) ? trim($_GET['reason']) : '';
+$reason = in_array($reason, Report::REASONS, true) ? $reason : '';
+
 $sort_labels = [
     'recent'       => '🕐 Most Recent',
     'oldest'       => '📅 Oldest First',
@@ -31,7 +35,7 @@ $pending_reports= $reportObj->getPendingCount();
 $total_banned   = $pdo->query("SELECT COUNT(*) FROM users WHERE is_banned=1 AND (ban_until IS NULL OR ban_until > NOW())")->fetchColumn();
 
 // Tab data
-$reports   = $tab === 'reports' ? $reportObj->getPending($sort) : [];
+$reports   = $tab === 'reports' ? $reportObj->getPending($sort, $reason) : [];
 $all_pets  = $tab === 'pets'    ? $petObj->getAllAdmin($_GET['q'] ?? '') : [];
 $mod_logs  = ($tab === 'logs' && is_admin()) ? $logObj->getAll() : [];
 $my_logs   = $tab === 'mylogs'  ? $logObj->getByMod($_SESSION['user_id']) : [];
@@ -124,21 +128,43 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
 
             <!-- TAB: REPORTS -->
             <?php if ($tab === 'reports'): ?>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
                 <h2 style="font-size:18px;margin:0">Pending Reports</h2>
-                <!-- Sort dropdown -->
-                <div class="sort-wrap" id="sortWrap">
-                  <button class="sort-btn" id="sortToggle" type="button">
-                    <span>Sort: <?= htmlspecialchars($sort_labels[$sort]) ?></span>
-                    <span class="sort-arrow">▼</span>
-                  </button>
-                  <div class="sort-dropdown">
-                    <?php foreach ($sort_labels as $val => $label): ?>
-                      <a href="?tab=reports&sort=<?= $val ?>"
-                         class="sort-option <?= $sort === $val ? 'active' : '' ?>">
-                        <?= $label ?>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <!-- Reason filter dropdown -->
+                  <div class="sort-wrap" id="reasonWrap">
+                    <button class="sort-btn" id="reasonToggle" type="button">
+                      <span>Reason: <?= (!empty($reason) && in_array($reason, Report::REASONS, true)) ? htmlspecialchars(trim($reason)) : 'All' ?></span>
+                      <span class="sort-arrow">▼</span>
+                    </button>
+                    <div class="sort-dropdown">
+                      <a href="?tab=reports&sort=<?= $sort ?>"
+                         class="sort-option <?= ($reason === '' || $reason === false) ? 'active' : '' ?>">
+                        All Categories
                       </a>
-                    <?php endforeach; ?>
+                      <?php foreach (Report::REASONS as $r): ?>
+                        <a href="?tab=reports&sort=<?= $sort ?>&reason=<?= urlencode($r) ?>"
+                           class="sort-option <?= (trim($reason) === trim($r)) ? 'active' : '' ?>">
+                          <?= htmlspecialchars($r) ?>
+                        </a>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+                  
+                  <!-- Sort dropdown -->
+                  <div class="sort-wrap" id="sortWrap">
+                    <button class="sort-btn" id="sortToggle" type="button">
+                      <span>Sort: <?= htmlspecialchars($sort_labels[$sort]) ?></span>
+                      <span class="sort-arrow">▼</span>
+                    </button>
+                    <div class="sort-dropdown">
+                      <?php foreach ($sort_labels as $val => $label): ?>
+                        <a href="?tab=reports&sort=<?= $val ?><?= $reason ? '&reason='.urlencode($reason) : '' ?>"
+                           class="sort-option <?= $sort === $val ? 'active' : '' ?>">
+                          <?= $label ?>
+                        </a>
+                      <?php endforeach; ?>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -247,7 +273,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="type" value="hard_delete">
                             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                            <button class="btn btn-red btn-sm hard-del-btn" data-name="<?= htmlspecialchars($pet['name']) ?>">❌ Delete Forever</button>
+                            <button class="btn btn-red btn-sm hard-del-btn" data-name="<?= htmlspecialchars($pet['name']) ?>">❌ Delete Permanently</button>
                           </form>
                         <?php endif; ?>
                       </td>

@@ -28,6 +28,8 @@ if ($report) {
     }
 }
 
+header('Content-Type: application/json');
+
 if ($action === 'remove') {
     $reportObj->markRemoved($report_id, $_SESSION['user_id']);
     $petObj->softDelete($pet_id, $_SESSION['user_id'], get_role());
@@ -49,6 +51,9 @@ if ($action === 'remove') {
     // Award mod points
     award_points($pdo, $_SESSION['user_id'], PTS_MOD_REMOVE_POST, 'Removed reported post', 'mod');
 
+    echo json_encode(['success' => true, 'message' => 'Post removed successfully']);
+    exit;
+
 } elseif ($action === 'dismiss') {
     $reportObj->dismiss($report_id, $_SESSION['user_id']);
 
@@ -60,7 +65,10 @@ if ($action === 'remove') {
     );
 
     award_points($pdo, $_SESSION['user_id'], PTS_MOD_DISMISS, 'Dismissed report', 'mod');
+
+    echo json_encode(['success' => true, 'message' => 'Report dismissed']);
+    exit;
 }
 
-header("Location: ../../views/admin/reports.php?sort=" . urlencode($sort));
+echo json_encode(['success' => false, 'error' => 'Invalid action']);
 exit;

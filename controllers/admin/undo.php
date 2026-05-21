@@ -32,5 +32,7 @@ if ($type === 'restore_pet') {
     award_points($pdo, $_SESSION['user_id'], PTS_ADMIN_ACTION, 'Undid a moderator action', 'mod');
 }
 
-header("Location: ../../views/admin/dashboard.php?tab=logs");
+// Redirect to appropriate tab (use 'logs' for admins, 'mylogs' for mods)
+$redirect_tab = is_admin() ? 'logs' : 'mylogs';
+header("Location: ../../views/admin/dashboard.php?tab={$redirect_tab}");
 exit;

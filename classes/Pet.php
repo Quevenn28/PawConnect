@@ -225,8 +225,18 @@ class Pet {
 
     /**
      * Admin only: Hard delete — permanently removes from DB.
+     * Deletes related records first to handle foreign key constraints.
      */
     public function hardDelete(int $pet_id): void {
+        // Delete related adoption requests
+        $this->pdo->prepare("DELETE FROM adoption_requests WHERE pet_id=?")
+                  ->execute([$pet_id]);
+        
+        // Delete related reports
+        $this->pdo->prepare("DELETE FROM reports WHERE pet_id=?")
+                  ->execute([$pet_id]);
+        
+        // Now delete the pet itself
         $this->pdo->prepare("DELETE FROM pets WHERE id=?")
                   ->execute([$pet_id]);
     }

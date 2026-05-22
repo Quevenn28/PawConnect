@@ -4,14 +4,32 @@
 
 @media (max-width: 768px) {
     .navbar {
-        padding: 0 16px;
+        padding: 12px 12px;
         flex-wrap: wrap;
         height: auto;
-        gap: 12px;
+        gap: 8px;
+        min-height: auto;
+    }
+    .nav-logo {
+        font-size: 16px;
+        flex-basis: 100%;
+        text-align: center;
+    }
+    .nav-logo span {
+        font-size: 20px;
     }
     .nav-links {
         flex-wrap: wrap;
         justify-content: center;
+        width: 100%;
+        gap: 6px;
+    }
+    .nav-links a {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .btn-nav {
+        padding: 6px 12px !important;
     }
     .hero h1 { font-size: 32px; }
     .hero-stats { gap: 20px; }
@@ -21,21 +39,48 @@
         margin-left: 0; 
         padding-left: 16px; 
         padding-right: 16px; 
+        height: auto !important;
+    }
+    
+    .dashboard-wrap > .container-fluid {
+        height: auto !important;
+    }
+    
+    .dashboard-wrap > .container-fluid > .row {
+        height: auto !important;
+        flex-wrap: wrap;
+    }
+    
+    .admin-wrap > .container-fluid {
+        height: auto !important;
+    }
+    
+    .admin-wrap > .container-fluid > .row {
+        height: auto !important;
+        flex-wrap: wrap;
+    }
+    
+    .browse-wrap > .container-fluid {
+        height: auto !important;
+    }
+    
+    .browse-wrap > .container-fluid > .row {
+        height: auto !important;
+        flex-wrap: wrap;
     }
     .filter-box { position: static; }
     .form-row { grid-template-columns: 1fr; }
     .attrs-grid { grid-template-columns: 1fr; }
     .hero { padding: 50px 20px; }
     .section { padding: 40px 0; }
-    .footer-links { flex-direction: column; gap: 10px; }
     
     /* Sidebar mobile specific - using left positioning */
     .sidebar-wrapper {
         position: fixed;
-        top: 64px;
+        top: 0;
         left: -280px;
         width: 280px !important;
-        height: calc(100vh - 64px);
+        height: 100vh;
         background: var(--white);
         z-index: 999;
         box-shadow: var(--shadow-md);
@@ -54,8 +99,10 @@
     
     .main-content-wrapper {
         width: 100% !important;
-        padding-left: 16px !important;
+        padding-left: 56px !important;
         padding-right: 16px !important;
+        height: auto !important;
+        min-height: auto !important;
     }
     
     /* Hide close button when sidebar is collapsed on mobile */
@@ -75,10 +122,10 @@
     
     .sidebar-overlay {
         position: fixed;
-        top: 64px;
+        top: 0;
         left: 0;
         width: 100%;
-        height: calc(100% - 64px);
+        height: 100%;
         background: rgba(0, 0, 0, 0.5);
         z-index: 998;
         display: none;
@@ -90,9 +137,16 @@
     
     /* Adjust button sizes for mobile */
     .content-open-btn {
+        position: fixed !important;
+        top: 90px !important;
+        left: 8px !important;
         width: 36px;
         height: 36px;
         font-size: 20px;
+        z-index: 150 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
     }
     
     .sidebar-close-btn {

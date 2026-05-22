@@ -33,6 +33,9 @@
     width: 100%;
     padding-left: 0;
     padding-right: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Row with flex for sidebar layout */
@@ -40,6 +43,8 @@
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    height: 100%;
+    min-height: 100%;
 }
 
 /* Fixed footer for all pages */
@@ -61,31 +66,37 @@ body {
 .dashboard-wrap {
     display: flex !important;
     flex-direction: column !important;
+    height: calc(100vh - 64px - 70px);
 }
 
 .dashboard-wrap > .container-fluid {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
+    height: 100%;
 }
 
 .dashboard-wrap > .container-fluid > .row {
     flex: 1 !important;
+    height: 100%;
 }
 
 .admin-wrap {
     display: flex !important;
     flex-direction: column !important;
+    height: calc(100vh - 64px - 70px);
 }
 
 .admin-wrap > .container-fluid {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
+    height: 100%;
 }
 
 .admin-wrap > .container-fluid > .row {
     flex: 1 !important;
+    height: 100%;
 }
 
 .browse-wrap {

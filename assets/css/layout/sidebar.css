@@ -7,15 +7,15 @@
     transition: all 0.3s ease;
     width: 280px;
     flex-shrink: 0;
-    height: auto;
-    min-height: 400px;
+    height: calc(100vh - 64px - 70px);
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-@media (min-width: 769px) {
+@media (max-width: 768px) {
     .sidebar-wrapper {
-        height: calc(100vh - 64px - 70px);
+        height: auto;
+        min-height: 400px;
     }
 }
 
@@ -112,9 +112,16 @@
     padding-right: 24px;
     display: flex;
     flex-direction: column;
-    min-height: auto;
+    height: calc(100vh - 64px - 70px);
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .main-content-wrapper {
+        height: auto;
+        min-height: auto;
+    }
 }
 
 /* When sidebar is visible, content has no left padding */

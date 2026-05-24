@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_login();
 
 $userObj    = new User($pdo);
@@ -132,12 +132,12 @@ $adopter_title  = get_adopter_title($adopter_points);
                   </div>
 
                   <div class="contact-list">
-                    <?php if ($user['phone']): ?><div class="contact-item">📞 <a href="tel:<?= htmlspecialchars($user['phone']) ?>"><?= htmlspecialchars($user['phone']) ?></a></div><?php endif; ?>
-                    <div class="contact-item">✉️ <a href="mailto:<?= htmlspecialchars($user['email']) ?>"><?= htmlspecialchars($user['email']) ?></a></div>
-                    <?php if ($user['facebook']): ?><div class="contact-item">📘 <a href="<?= htmlspecialchars($user['facebook']) ?>" target="_blank">Facebook</a></div><?php endif; ?>
-                    <?php if ($user['address']): ?><div class="contact-item">📍 <?= htmlspecialchars($user['address']) ?></div><?php endif; ?>
+                    <?php if ($user['phone']): ?><div class="contact-item"><i class="fas fa-phone"></i> <a href="tel:<?= htmlspecialchars($user['phone']) ?>"><?= htmlspecialchars($user['phone']) ?></a></div><?php endif; ?>
+                    <div class="contact-item"><i class="fas fa-envelope"></i> <a href="mailto:<?= htmlspecialchars($user['email']) ?>"><?= htmlspecialchars($user['email']) ?></a></div>
+                    <?php if ($user['facebook']): ?><div class="contact-item"><i class="fab fa-facebook"></i> <a href="<?= htmlspecialchars($user['facebook']) ?>" target="_blank">Facebook</a></div><?php endif; ?>
+                    <?php if ($user['address']): ?><div class="contact-item"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($user['address']) ?></div><?php endif; ?>
                   </div>
-                  <a href="edit.php" class="btn btn-outline w-full btn-sm" style="margin-top:14px;">✏️ Edit Profile</a>
+                  <a href="edit.php" class="btn btn-outline w-full btn-sm" style="margin-top:14px;"><i class="fas fa-edit"></i> Edit Profile</a>
                 </div>
               </div>
             </section>
@@ -168,16 +168,16 @@ $adopter_title  = get_adopter_title($adopter_points);
                       <div class="my-pet-actions">
                         <a href="../pets/show.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-outline btn-sm">View</a>
                         <?php if ($pet['status'] === 'available'): ?>
-                          <a href="../pets/edit.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-blue btn-sm">✏️ Edit</a>
+                          <a href="../pets/edit.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-blue btn-sm"><i class="fas fa-edit"></i> Edit</a>
                           <form method="POST" action="../../controllers/pets/mark_adopted.php" class="mark-adopted-form" data-name="<?= htmlspecialchars($pet['name']) ?>">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                            <button class="btn btn-green btn-sm">✓ Adopted</button>
+                            <button class="btn btn-green btn-sm"><i class="fas fa-check"></i> Adopted</button>
                           </form>
                           <form method="POST" action="../../controllers/pets/delete.php" class="delete-pet-form" data-name="<?= htmlspecialchars($pet['name']) ?>">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                            <button class="btn btn-red btn-sm">🗑️ Remove</button>
+                            <button class="btn btn-red btn-sm"><i class="fas fa-trash"></i> Remove</button>
                           </form>
                         <?php endif; ?>
                       </div>
@@ -212,7 +212,7 @@ $adopter_title  = get_adopter_title($adopter_points);
                               $requester_points = get_rehomer_points($pdo, $req['user_id']);
                               $requester_title = get_rehomer_title($requester_points);
                               ?>
-                              <div class="tooltip-badge">🏠 <?= $requester_title ?></div>
+                              <div class="tooltip-badge"><i class="fas fa-home"></i> <?= $requester_title ?></div>
                           </div>
                       </span>
                       <span>wants to adopt</span>
@@ -221,14 +221,14 @@ $adopter_title  = get_adopter_title($adopter_points);
                       </a>
                       <?php if ($req['message']): ?><p>"<?= htmlspecialchars($req['message']) ?>"</p><?php endif; ?>
                       <div class="contact-chips">
-                        <?php if ($req['phone']): ?><a href="tel:<?= htmlspecialchars($req['phone']) ?>" class="chip">📞 <?= htmlspecialchars($req['phone']) ?></a><?php endif; ?>
-                        <?php if ($req['facebook']): ?><a href="<?= htmlspecialchars($req['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
+                        <?php if ($req['phone']): ?><a href="tel:<?= htmlspecialchars($req['phone']) ?>" class="chip"><i class="fas fa-phone"></i> <?= htmlspecialchars($req['phone']) ?></a><?php endif; ?>
+                        <?php if ($req['facebook']): ?><a href="<?= htmlspecialchars($req['facebook']) ?>" target="_blank" class="chip"><i class="fab fa-facebook"></i> Facebook</a><?php endif; ?>
                       </div>
                     </div>
                     <form method="POST" action="../../controllers/requests/handle.php" style="display:flex;gap:6px">
                       <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                       <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
-                      <button name="action" value="approved" class="btn btn-green btn-sm">✓ Approve</button>
+                      <button name="action" value="approved" class="btn btn-green btn-sm"><i class="fas fa-check"></i> Approve</button>
                       <button name="action" value="rejected" class="btn btn-red btn-sm">✕ Reject</button>
                     </form>
                   </div>
@@ -259,11 +259,11 @@ $adopter_title  = get_adopter_title($adopter_points);
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
                       <div style="display:flex;gap:6px;">
-                        <a href="../pets/show.php?id=<?= encode_id($r['pet_id']) ?>" class="btn btn-outline btn-sm">👁️ View</a>
+                        <a href="../pets/show.php?id=<?= encode_id($r['pet_id']) ?>" class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> View</a>
                         <form method="POST" action="../../controllers/requests/delete.php" class="del-req-form" data-name="<?= htmlspecialchars($r['pet_name']) ?>">
                           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                           <input type="hidden" name="request_id" value="<?= $r['id'] ?>">
-                          <button class="btn btn-gray btn-sm">🗑️ Remove</button>
+                          <button class="btn btn-gray btn-sm"><i class="fas fa-trash"></i> Remove</button>
                         </form>
                       </div>
                       <span style="font-size:12px;color:var(--gray-4)"><?= date('M j', strtotime($r['created_at'])) ?></span>
@@ -276,7 +276,7 @@ $adopter_title  = get_adopter_title($adopter_points);
 
             <section id="adopted" class="dashboard-section">
               <div class="panel">
-                <div class="panel-header"><h2>🏠 Pets I Adopted</h2></div>
+                <div class="panel-header"><h2><i class="fas fa-home"></i> Pets I Adopted</h2></div>
                 <?php if (!$my_adopted): ?>
                   <div class="empty-state"><div class="empty-icon">🐾</div><p>You haven't adopted any pets yet.</p></div>
                 <?php else: ?>
@@ -288,14 +288,14 @@ $adopter_title  = get_adopter_title($adopter_points);
                         <span class="req-badge req-approved">Adopted</span>
                         <p style="margin-top:6px;font-size:13px;color:var(--gray-4)">Adopted on <?= date('M j, Y', strtotime($adopt['adopted_at'])) ?></p>
                       </div>
-                      <a href="../pets/show.php?id=<?= encode_id($adopt['pet_id']) ?>" class="btn btn-gray btn-sm">👁️ View</a>
+                      <a href="../pets/show.php?id=<?= encode_id($adopt['pet_id']) ?>" class="btn btn-gray btn-sm"><i class="fas fa-eye"></i> View</a>
                     </div>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </div>
               <?php if ($adopted_hist): ?>
               <div class="panel">
-                <div class="panel-header"><h2>🏠 Pets Rehomed</h2></div>
+                <div class="panel-header"><h2><i class="fas fa-home"></i> Pets Rehomed</h2></div>
                 <?php foreach ($adopted_hist as $a): ?>
                 <div class="my-request-row">
                   <div class="req-thumb">🐾</div>
@@ -305,7 +305,7 @@ $adopter_title  = get_adopter_title($adopter_points);
                   </div>
                   <div style="display:flex;gap:8px;align-items:center">
                     <span style="font-size:12px;color:var(--gray-4)"><?= date('M j, Y', strtotime($a['adopted_at'])) ?></span>
-                    <a href="../pets/show.php?id=<?= encode_id($a['pet_id']) ?>" class="btn btn-gray btn-sm">👁️ View</a>
+                    <a href="../pets/show.php?id=<?= encode_id($a['pet_id']) ?>" class="btn btn-gray btn-sm"><i class="fas fa-eye"></i> View</a>
                   </div>
                 </div>
                 <?php endforeach; ?>

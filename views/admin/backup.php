@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_admin();
 
 define('BACKUP_DIR', dirname(__DIR__, 2) . '/backups/');
@@ -131,7 +131,7 @@ $logs = $logs->fetchAll();
                                                     </form>
                                                     <form method="POST" action="../../controllers/admin/backup.php?action=delete&file=<?= urlencode($backup['filename']) ?>" style="display: inline;" class="delete-backup-form" data-file="<?= htmlspecialchars($backup['filename']) ?>">
                                                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                                        <button type="submit" class="btn btn-red btn-sm">🗑️ Delete</button>
+                                                        <button type="submit" class="btn btn-red btn-sm"><i class="fas fa-trash"></i> Delete</button>
                                                     </form>
                                                 </div>
                                             </td>

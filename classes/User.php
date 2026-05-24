@@ -125,17 +125,18 @@ class User {
         string $phone,
         string $facebook,
         string $address,
-        string $birthdate
+        string $birthdate,
+        string $sex = 'Prefer not to say'
     ): int {
         $hashed = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->pdo->prepare("
             INSERT INTO users
-                (full_name, username, email, password, phone, facebook, address, birthdate, role, points)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
+                (full_name, username, email, password, phone, facebook, address, birthdate, sex, role, points)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
         ");
         $stmt->execute([
             $full_name, $username, $email, $hashed,
-            $phone, $facebook, $address, $birthdate, 0
+            $phone, $facebook, $address, $birthdate, $sex, 0
         ]);
         return (int) $this->pdo->lastInsertId();
     }
@@ -150,11 +151,17 @@ class User {
         string $phone,
         string $facebook,
         string $address,
+        ?string $sex = null,
         ?string $profile_photo = null,
         ?string $new_password = null
     ): void {
         $updates = ['full_name=?', 'phone=?', 'facebook=?', 'address=?'];
         $params  = [$full_name, $phone, $facebook, $address];
+
+        if ($sex !== null) {
+            $updates[] = 'sex=?';
+            $params[]  = $sex;
+        }
 
         if ($profile_photo !== null) {
             $updates[] = 'profile_photo=?';

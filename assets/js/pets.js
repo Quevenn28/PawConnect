@@ -56,14 +56,20 @@ function previewPhotoEdit(input) {
 }
 
 // Report form functions for show.php
-function showReportForm() {
-    const form = document.getElementById('reportForm');
-    if (form) form.style.display = 'block';
+function openReportModal() {
+    const modal = document.getElementById('reportModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
 }
 
-function hideReportForm() {
-    const form = document.getElementById('reportForm');
-    if (form) form.style.display = 'none';
+function closeReportModal() {
+    const modal = document.getElementById('reportModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
 }
 
 // ============================================================
@@ -71,6 +77,19 @@ function hideReportForm() {
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Reset body overflow on page load (in case modal was open before)
+    document.body.style.overflow = 'auto';
+    
+    // Setup report modal - close when clicking outside
+    const reportModal = document.getElementById('reportModal');
+    if (reportModal) {
+        reportModal.addEventListener('click', function(e) {
+            if (e.target === reportModal) {
+                closeReportModal();
+            }
+        });
+    }
+    
     // Auto-dismiss success alerts after 4 seconds (MUST run first, before sidebar check)
     document.querySelectorAll('.alert-success.auto-dismiss').forEach(alert => {
         setTimeout(() => {

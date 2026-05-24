@@ -5,6 +5,8 @@
 //  Sets $error and $success for the view.
 // ============================================================
 
+require_once __DIR__ . '/../../config/validation.php';
+
 $error   = '';
 $success = false;
 
@@ -15,18 +17,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone          = trim($_POST['phone']     ?? '');
     $facebook       = trim($_POST['facebook']  ?? '');
     $address        = trim($_POST['address']   ?? '');
+    $sex            = trim($_POST['sex']       ?? $user['sex'] ?? 'Prefer not to say');
     $current_pw     = trim($_POST['current_password'] ?? '');
     $new_password   = trim($_POST['new_password'] ?? '');
     $confirm_pw     = trim($_POST['confirm_password'] ?? '');
     $profile_photo  = null;
 
-    if (!$full_name) {
-        $error = 'Full name is required.';
-    } elseif (!$phone && !$facebook) {
+    // Validate full name
+    $name_validation = validate_full_name($full_name);
+    if (!$name_validation['valid']) {
+        $error = $name_validation['error'];
+    } else {
+        $full_name = $name_validation['value'];
+    }
+
+    // Validate phone (optional but if provided, must be valid)
+    if (!$error && $phone) {
+        $phone_validation = validate_phone($phone);
+        if (!$phone_validation['valid']) {
+            $error = $phone_validation['error'];
+        } else {
+            $phone = $phone_validation['value'];
+        }
+    }
+
+    // Validate Facebook (optional but if provided, must be valid)
+    if (!$error && $facebook) {
+        $facebook_validation = validate_facebook($facebook);
+        if (!$facebook_validation['valid']) {
+            $error = $facebook_validation['error'];
+        } else {
+            $facebook = $facebook_validation['value'];
+        }
+    }
+
+    if (!$error && !$phone && !$facebook) {
         $error = 'Please provide at least a phone number or Facebook link.';
-    } elseif (!$address) {
-        $error = 'Address is required.';
-    } elseif ($current_pw || $new_password || $confirm_pw) {
+    }
+
+    // Validate address
+    if (!$error) {
+        $address_validation = validate_address($address);
+        if (!$address_validation['valid']) {
+            $error = $address_validation['error'];
+        } else {
+            $address = $address_validation['value'];
+        }
+    }
+
+    // Handle password change
+    if (!$error && ($current_pw || $new_password || $confirm_pw)) {
         // If any password field is filled, all must be valid
         if (!$current_pw) {
             $error = 'Please enter your current password to change it.';
@@ -65,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userObj->update(
                 $_SESSION['user_id'],
                 $full_name, $phone, $facebook, $address,
+                $sex,
                 $profile_photo,
                 $new_password ?: null
             );

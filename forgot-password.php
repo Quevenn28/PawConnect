@@ -55,7 +55,7 @@ require_once 'views/layout/layout.php';
 <div class="form-page">
   <div class="form-box">
     <div class="form-logo">
-      <div class="paw">🔑</div>
+      <div class="paw"><i class="fas fa-key"></i></div>
       <h1>Reset Password</h1>
       <p>Enter your email or username to reset your password</p>
     </div>
@@ -65,7 +65,7 @@ require_once 'views/layout/layout.php';
     <?php endif; ?>
 
     <?php if ($message): ?>
-      <div class="alert alert-success">✓ <?= htmlspecialchars($message) ?></div>
+      <div class="alert alert-success"><i class="fas fa-check"></i> <?= htmlspecialchars($message) ?></div>
       <?php if (isset($reset_link)): ?>
         <div style="background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:12px">
           <p style="font-size:12px;color:var(--gray-4);margin-bottom:6px">Your reset token (valid for 24 hours):</p>

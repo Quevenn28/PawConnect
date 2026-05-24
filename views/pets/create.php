@@ -1,14 +1,15 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
-require_once '../../controllers/pets/create.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
+require_once __DIR__ . '/../../controllers/pets/create.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Add Pet — PawConnect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -35,14 +36,15 @@ require_once '../../controllers/pets/create.php';
       <div class="form-row">
         <div class="form-group">
           <label>Pet Name <span class="req">*</span></label>
-          <input type="text" name="name" placeholder="e.g. Buddy" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" required>
+          <input type="text" name="name" placeholder="e.g. Buddy" maxlength="20" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" required>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:4px">Max 20 characters</div>
         </div>
         <div class="form-group">
-          <label>Species <span class="req">*</span></label>
-          <select name="species" required>
+          <label>Category <span class="req">*</span></label>
+          <select name="category" required>
             <!-- <option value="">-- Select --</option> -->
             <?php foreach (['Dog','Cat','Bird','Rabbit','Hamster','Fish','Reptile','Other'] as $sp): ?>
-              <option <?= ($_POST['species']??'')===$sp?'selected':'' ?>><?= $sp ?></option>
+              <option <?= ($_POST['category']??'')===$sp?'selected':'' ?>><?= $sp ?></option>
             <?php endforeach; ?>
           </select>
         </div>
@@ -50,7 +52,8 @@ require_once '../../controllers/pets/create.php';
       <div class="form-row">
         <div class="form-group">
           <label>Breed <span class="req">*</span></label>
-          <input type="text" name="breed" placeholder="e.g. Labrador" value="<?= htmlspecialchars($_POST['breed'] ?? '') ?>" required>
+          <input type="text" name="breed" placeholder="e.g. Labrador" maxlength="30" value="<?= htmlspecialchars($_POST['breed'] ?? '') ?>" required>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:4px">Max 30 characters</div>
         </div>
         <div class="form-group">
           <label>Age <span class="req">*</span></label>
@@ -77,7 +80,8 @@ require_once '../../controllers/pets/create.php';
       </div>
       <div class="form-group">
         <label>About this Pet <span class="req">*</span></label>
-        <textarea name="description" rows="4" placeholder="Personality, habits, ideal home…" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+        <textarea name="description" rows="4" placeholder="Personality, habits, ideal home…" maxlength="100" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">Max 100 characters</div>
       </div>
 
       <div class="form-row">
@@ -90,7 +94,8 @@ require_once '../../controllers/pets/create.php';
       </div>
       <div class="form-group">
         <label>Medical Notes <span class="text-gray">(optional)</span></label>
-        <textarea name="health_info" rows="3" placeholder="Additional medical details or special care notes…"><?= htmlspecialchars($_POST['health_info'] ?? '') ?></textarea>
+        <textarea name="health_info" rows="3" placeholder="Additional medical details or special care notes…" maxlength="100"><?= htmlspecialchars($_POST['health_info'] ?? '') ?></textarea>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">Max 100 characters</div>
       </div>
       <div class="form-group">
         <label>Good with Children <span class="req">*</span></label>

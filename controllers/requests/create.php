@@ -1,7 +1,7 @@
 <?php
 // controllers/requests/create.php — send adoption request
-require_once '../../autoload.php';
-require_once '../../config/database.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
 require_login();
 verify_csrf();
 

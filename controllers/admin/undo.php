@@ -2,7 +2,7 @@
 // controllers/admin/undo.php — admin undo actions
 try {
     require_once '../../autoload.php';
-    require_once '../../config/database.php';
+    require_once __DIR__ . '/../../config/database.php';
 
     require_admin();
     verify_csrf();
@@ -34,7 +34,7 @@ try {
         award_points($pdo, $_SESSION['user_id'], PTS_ADMIN_ACTION, 'Permanently deleted a post', 'mod');
         
         // Flash success message
-        flash('success', '🗑️ Post permanently deleted.');
+        flash('success', '<i class="fas fa-trash"></i> Post permanently deleted.');
 
     } elseif ($type === 'undo_log') {
         $log_id = (int)($_POST['log_id'] ?? 0);

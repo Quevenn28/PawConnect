@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 
 $id = decode_id($_GET['id'] ?? '');
 if (!$id) { header("Location: index.php"); exit; }
@@ -74,10 +74,10 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 <div class="pet-detail-wrap">
 
   <?php if (isset($_GET['requested'])): ?>
-    <div class="alert alert-success auto-dismiss">✓ Your adoption request has been sent! The rehomer will contact you soon. 🐾</div>
+    <div class="alert alert-success auto-dismiss"><i class="fas fa-check"></i> Your adoption request has been sent! The rehomer will contact you soon. 🐾</div>
   <?php endif; ?>
   <?php if (isset($_GET['reported'])): ?>
-    <div class="alert alert-success auto-dismiss">✓ Report submitted. Our moderators will review it shortly.</div>
+    <div class="alert alert-success auto-dismiss"><i class="fas fa-check"></i> Report submitted. Our moderators will review it shortly.</div>
   <?php endif; ?>
   <?php if (isset($_GET['error'])): ?>
     <div class="alert alert-error"><?= htmlspecialchars($_GET['error']) ?></div>
@@ -89,7 +89,7 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
       <a href="index.php" class="btn btn-gray btn-sm" style="margin-left:10px;">Browse Pets</a>
     </div>
     <?php if ($is_owner && $pet['status'] === 'available'): ?>
-      <a href="edit.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-primary btn-sm">✏️ Edit Pet Listing</a>
+      <a href="edit.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit Pet Listing</a>
     <?php endif; ?>
   </div>
 
@@ -150,14 +150,14 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
           <div class="owner-av"><?= strtoupper(substr($pet['full_name'],0,1)) ?></div>
           <div class="owner-av-name">
             <strong><?= htmlspecialchars($pet['full_name']) ?></strong>
-            <span>🐾 Rehomer<?= ($pet['status'] === 'available' && $pet['address']) ? ' · '.$pet['address'] : '' ?></span>
+            <span>🐾 Rehomer<?= ($pet['status'] === 'available' && $pet['address']) ? ' · '.htmlspecialchars($pet['address']) : '' ?></span>
           </div>
         </div>
         
         <?php if ($pet['status'] === 'available'): ?>
           <div class="contact-chips">
-            <?php if ($pet['phone']): ?><a href="tel:<?= htmlspecialchars($pet['phone']) ?>" class="chip">📞 <?= htmlspecialchars($pet['phone']) ?></a><?php endif; ?>
-            <?php if ($pet['facebook']): ?><a href="<?= htmlspecialchars($pet['facebook']) ?>" target="_blank" class="chip">📘 Facebook</a><?php endif; ?>
+            <?php if ($pet['phone']): ?><a href="tel:<?= htmlspecialchars($pet['phone']) ?>" class="chip"><i class="fas fa-phone"></i> <?= htmlspecialchars($pet['phone']) ?></a><?php endif; ?>
+            <?php if ($pet['facebook']): ?><a href="<?= htmlspecialchars($pet['facebook']) ?>" target="_blank" class="chip"><i class="fab fa-facebook"></i> Facebook</a><?php endif; ?>
           </div>
         <?php endif; ?>
       </div>
@@ -175,11 +175,11 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
           </div>
           <div class="owner-av-name">
             <strong><?= htmlspecialchars($adopter_info['full_name']) ?></strong>
-            <span>🏠 Adopter</span>
+            <span><i class="fas fa-home"></i> Adopter</span>
           </div>
         </div>
         <div style="font-size:13px;color:var(--gray-3);margin-top:4px">
-          ✓ Adopted on <?= date('F j, Y', strtotime($adopter_info['adopted_at'])) ?>
+          <i class="fas fa-check"></i> Adopted on <?= date('F j, Y', strtotime($adopter_info['adopted_at'])) ?>
         </div>
       </div>
       <?php endif; ?>
@@ -215,7 +215,7 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
       <?php else: ?>
         <div class="alert alert-info" style="text-align:center;background:var(--gray-6);border-color:var(--gray-5)">
           <?php if ($pet['status'] === 'adopted'): ?>
-            🏠 This pet has been adopted.
+            <i class="fas fa-home"></i> This pet has been adopted.
           <?php else: ?>
             ⚠️ This pet listing is no longer available.
           <?php endif; ?>
@@ -226,36 +226,10 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
       <?php if ($pet['status'] === 'available' && is_logged_in() && $_SESSION['user_id'] != $pet['user_id']): ?>
         <div style="margin-top:16px;text-align:center">
           <?php if ($already_reported): ?>
-            <span style="font-size:12px;color:var(--gray-4)">✓ You've already reported this listing.</span>
+            <span style="font-size:12px;color:var(--gray-4)"><i class="fas fa-check"></i> You've already reported this listing.</span>
           <?php else: ?>
-            <button onclick="showReportForm()" class="btn btn-gray btn-sm w-full" style="font-size:12px">🚩 Report this listing</button>
+            <button onclick="openReportModal()" class="btn btn-gray btn-sm w-full" style="font-size:12px">🚩 Report this listing</button>
           <?php endif; ?>
-        </div>
-
-        <!-- Report form (hidden by default) -->
-        <div id="reportForm" style="display:none;margin-top:12px;background:var(--gray-6);border:1px solid var(--gray-5);border-radius:var(--radius-lg);padding:16px">
-          <h4 style="margin-bottom:10px;font-size:14px">Report Listing</h4>
-          <form method="POST" action="../../controllers/reports/create.php">
-            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-            <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-            <div class="form-group">
-              <label style="font-size:13px">Reason <span class="req">*</span></label>
-              <select name="reason" required style="font-size:13px">
-                <option value="">-- Select a reason --</option>
-                <?php foreach (Report::REASONS as $reason): ?>
-                  <option value="<?= htmlspecialchars($reason) ?>"><?= htmlspecialchars($reason) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="form-group">
-              <label style="font-size:13px">Additional Details (optional)</label>
-              <textarea name="details" rows="2" style="font-size:13px" placeholder="Describe the issue…"></textarea>
-            </div>
-            <div style="display:flex;gap:8px">
-              <button type="button" onclick="hideReportForm()" class="btn btn-gray btn-sm">Cancel</button>
-              <button type="submit" class="btn btn-red btn-sm">Submit Report</button>
-            </div>
-          </form>
         </div>
       <?php endif; ?>
     </div>
@@ -266,6 +240,38 @@ $is_owner = is_logged_in() && $_SESSION['user_id'] == $pet['user_id'];
 <div id="imageModal" class="image-modal">
   <button class="close-modal">&times;</button>
   <img id="modalImage" src="" alt="">
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center">
+  <div style="background:white;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="margin:0;font-size:20px">🚩 Report Listing</h2>
+      <button type="button" onclick="closeReportModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--gray-4)">&times;</button>
+    </div>
+    <p style="margin:0 0 16px 0;font-size:14px;color:var(--gray-3)">Help us maintain a safe community. Report this listing if you think it violates our guidelines.</p>
+    <form method="POST" action="../../controllers/reports/create.php" onsubmit="closeReportModal()">
+      <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+      <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
+      <div class="form-group">
+        <label style="font-size:13px">Reason <span class="req">*</span></label>
+        <select name="reason" required style="font-size:13px">
+          <option value="">-- Select a reason --</option>
+          <?php foreach (Report::REASONS as $reason): ?>
+            <option value="<?= htmlspecialchars($reason) ?>"><?= htmlspecialchars($reason) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-group">
+        <label style="font-size:13px">Additional Details (optional)</label>
+        <textarea name="details" rows="3" style="font-size:13px" placeholder="Describe the issue…"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button type="button" onclick="closeReportModal()" class="btn btn-gray btn-sm" style="flex:1">Cancel</button>
+        <button type="submit" class="btn btn-red btn-sm" style="flex:1">Submit Report</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="/assets/js/pets.js"></script>

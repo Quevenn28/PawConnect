@@ -5,6 +5,8 @@
 //  Sets $error (string) or $success (bool) for the view.
 // ============================================================
 
+require_once __DIR__ . '/../../config/validation.php';
+
 $error   = '';
 $success = false;
 
@@ -18,61 +20,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $facebook  = trim($_POST['facebook']            ?? '');
     $address   = trim($_POST['address']             ?? '');
     $birthdate = trim($_POST['birthdate']           ?? '');
+    $sex       = trim($_POST['sex']                 ?? 'Prefer not to say');
     $password  = $_POST['password']                 ?? '';
     $confirm   = $_POST['confirm']                  ?? '';
 
     // --- VALIDATION ---
-    if (!$full_name || !$username || !$email || !$password) {
+    
+    // Validate full name
+    $name_validation = validate_full_name($full_name);
+    if (!$name_validation['valid']) {
+        $error = $name_validation['error'];
+    }
+    
+    if (!$error && (!$username || !$email || !$password)) {
         $error = 'Please fill in all required fields.';
+    }
 
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (!$error && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
+    }
 
-    } elseif (!preg_match('/^[a-z0-9_]+$/', $username)) {
+    if (!$error && !preg_match('/^[a-z0-9_]+$/', $username)) {
         $error = 'Username may only contain letters, numbers, and underscores.';
+    }
 
-    } elseif (strlen($username) < 3 || strlen($username) > 60) {
+    if (!$error && (strlen($username) < 3 || strlen($username) > 60)) {
         $error = 'Username must be between 3 and 60 characters.';
+    }
 
-    } elseif ($password !== $confirm) {
+    if (!$error && $password !== $confirm) {
         $error = 'Passwords do not match.';
+    }
 
-    } elseif (strlen($password) < 6) {
+    if (!$error && strlen($password) < 6) {
         $error = 'Password must be at least 6 characters.';
+    }
 
-    } elseif (!$phone) {
-        $error = 'Please provide your phone number so adopters can contact you.';
-
-    } elseif (!$facebook) {
-        $error = 'Please provide your Facebook profile link so adopters can contact you.';
-
-    } elseif (!$address) {
-        $error = 'Please provide your address or location.';
-
-    } elseif (!$birthdate) {
-        $error = 'Please provide your birthdate.';
-
-    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $birthdate)) {
-        $error = 'Please enter a valid birthdate in YYYY-MM-DD format.';
-
-    } else {
-        try {
-            $dob = new DateTime($birthdate);
-            $today = new DateTime('today');
-        } catch (Exception $e) {
-            $dob = null;
+    // Validate phone
+    if (!$error) {
+        $phone_validation = validate_phone($phone);
+        if (!$phone_validation['valid']) {
+            $error = $phone_validation['error'];
+        } else {
+            $phone = $phone_validation['value'];
         }
+    }
 
-        if (!$dob) {
-            $error = 'Please enter a valid birthdate.';
+    // Validate Facebook
+    if (!$error) {
+        $facebook_validation = validate_facebook($facebook);
+        if (!$facebook_validation['valid']) {
+            $error = $facebook_validation['error'];
+        } else {
+            $facebook = $facebook_validation['value'];
+        }
+    }
 
-        } elseif ($dob > new DateTime('today')) {
-            $error = 'Birthdate cannot be in the future.';
+    // Validate address
+    if (!$error) {
+        $address_validation = validate_address($address);
+        if (!$address_validation['valid']) {
+            $error = $address_validation['error'];
+        } else {
+            $address = $address_validation['value'];
+        }
+    }
 
-        } elseif ($dob->diff($today)->y < 18) {
-            $error = 'You must be 18 years or older to register.';
+    // Validate birthdate
+    if (!$error) {
+        if (!$birthdate) {
+            $error = 'Please provide your birthdate.';
+        } else {
+            $birthdate_validation = validate_birthdate($birthdate);
+            if (!$birthdate_validation['valid']) {
+                $error = $birthdate_validation['error'];
+            } else {
+                $birthdate = $birthdate_validation['value'];
+            }
+        }
+    }
 
-        } elseif (!isset($_POST['agree_terms'])) {
+    if (!$error) {
+        if (!isset($_POST['agree_terms'])) {
             $error = 'You must agree to the Terms & Conditions to continue.';
 
         } else {
@@ -91,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user_id = $userObj->create(
                     $full_name, $username, $email,
                     $password, $phone, $facebook, $address,
-                    $birthdate
+                    $birthdate, $sex
                 );
 
                 // Log the welcome points

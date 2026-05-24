@@ -997,7 +997,7 @@
         "tableId": "muPzZnF1v_J3xFQSRe-Xe",
         "name": "removed_by",
         "comment": "",
-        "dataType": "ENUM(user,moderator,admin)",
+        "dataType": "INT",
         "default": "",
         "options": 0,
         "ui": {

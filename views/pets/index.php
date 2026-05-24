@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 
 $petObj          = new Pet($pdo);
 $species         = $_GET['species'] ?? '';

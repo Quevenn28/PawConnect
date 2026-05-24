@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_moderator();
 
 $logObj  = new ModLog($pdo);
@@ -79,7 +79,7 @@ $success = $_GET['success'] ?? '';
               <?php if ($pet): ?>
                 <div style="font-size:13px;font-weight:700"><?= htmlspecialchars($pet['name']) ?></div>
                 <div style="font-size:11px;color:var(--gray-4);margin-bottom:6px"><?= ModLog::targetLabel($log['target_type']) ?></div>
-                <a href="../pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-sm btn-outline" style="font-size:11px">👁️ View Post</a>
+                <a href="../pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-sm btn-outline" style="font-size:11px"><i class="fas fa-eye"></i> View Post</a>
               <?php else: ?>
                 <span style="font-size:13px;color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
               <?php endif; ?>

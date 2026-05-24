@@ -1,7 +1,7 @@
 <?php
 // controllers/admin/ban.php — ban or unban a user
-require_once '../../autoload.php';
-require_once '../../config/database.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
 require_moderator();
 verify_csrf();
 
@@ -39,7 +39,7 @@ if ($action === 'unban') {
     award_points($pdo, $_SESSION['user_id'], PTS_ADMIN_ACTION, 'Unbanned a user', 'mod');
     
     header('Content-Type: application/json');
-    echo json_encode(['success' => true, 'message' => '✓ '.$target['full_name'].' has been unbanned']);
+    echo json_encode(['success' => true, 'message' => '<i class="fas fa-check"></i> '.$target['full_name'].' has been unbanned']);
     exit;
 
 } else {

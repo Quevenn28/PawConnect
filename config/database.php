@@ -56,6 +56,16 @@ try {
         // Ignore if the users table does not exist yet or schema cannot be altered.
     }
 
+    // Ensure sex column exists for users
+    try {
+        $exists = $pdo->query("SHOW COLUMNS FROM users LIKE 'sex'")->fetch();
+        if (!$exists) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN sex ENUM('Male','Female','Prefer not to say') DEFAULT 'Prefer not to say' AFTER birthdate");
+        }
+    } catch (PDOException $e) {
+        // Ignore if the users table does not exist yet or schema cannot be altered.
+    }
+
     // Create backup_logs table if it doesn't exist
     try {
         $tableExists = $pdo->query("SHOW TABLES LIKE 'backup_logs'")->fetch();
@@ -274,40 +284,40 @@ function get_mod_title(int $mod_points): string {
 }
 
 /**
- * Returns emoji badge for rehomer title.
+ * Returns badge for rehomer title.
  */
 function get_rehomer_badge(string $title): string {
     return match($title) {
-        'Pawsome Hero'    => '🏆',
-        'Rescue Advocate' => '🌟',
-        'Shelter Helper'  => '💛',
-        'Pet Friend'      => '🐾',
-        default           => '🌱',
+        'Pawsome Hero'    => '',
+        'Rescue Advocate' => '',
+        'Shelter Helper'  => '',
+        'Pet Friend'      => '',
+        default           => '',
     };
 }
 
 /**
- * Returns emoji badge for adopter title.
+ * Returns badge for adopter title.
  */
 function get_adopter_badge(string $title): string {
     return match($title) {
-        'Adoption Champion' => '🏆',
-        'Forever Family'    => '🏠',
-        'Loving Home'       => '💙',
-        'New Adopter'       => '🌟',
-        default             => '🔍',
+        'Adoption Champion' => '',
+        'Forever Family'    => '',
+        'Loving Home'       => '',
+        'New Adopter'       => '',
+        default             => '',
     };
 }
 
 /**
- * Returns emoji badge for moderator title.
+ * Returns badge for moderator title.
  */
 function get_mod_badge(string $title): string {
     return match($title) {
-        'Senior Moderator' => '🛡️',
-        'Junior Moderator' => '⚔️',
-        'Rookie Moderator' => '🔰',
-        default            => '📋',
+        'Senior Moderator' => '',
+        'Junior Moderator' => '',
+        'Rookie Moderator' => '',
+        default            => '',
     };
 }
 

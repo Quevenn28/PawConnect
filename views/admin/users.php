@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_moderator();
 
 $userObj = new User($pdo);
@@ -78,7 +78,7 @@ $error   = $_GET['error']   ?? '';
                 <?= $u['ban_until'] ? 'Temp Ban' : 'Permanent Ban' ?>
               </span>
             <?php else: ?>
-              <span style="color:var(--green);font-size:12px;font-weight:700">✓ Active</span>
+              <span style="color:var(--green);font-size:12px;font-weight:700"><i class="fas fa-check"></i> Active</span>
             <?php endif; ?>
           </td>
           <?php if (is_admin()): ?>
@@ -108,7 +108,7 @@ $error   = $_GET['error']   ?? '';
                   <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                   <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                   <input type="hidden" name="action" value="unban">
-                  <button class="btn btn-green btn-sm">✓ Unban</button>
+                  <button class="btn btn-green btn-sm"><i class="fas fa-check"></i> Unban</button>
                 </form>
               <?php else: ?>
                 <button class="btn btn-red btn-sm open-ban-modal"

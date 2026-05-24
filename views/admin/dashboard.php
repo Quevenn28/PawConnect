@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_moderator();
 
 $userObj   = new User($pdo);
@@ -208,7 +208,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                   <?php endif; ?>
 
                   <div class="report-actions">
-                    <a href="../../views/pets/show.php?id=<?= encode_id($r['pet_id']) ?>" class="btn btn-gray btn-sm">👁️ View Post</a>
+                    <a href="../../views/pets/show.php?id=<?= encode_id($r['pet_id']) ?>" class="btn btn-gray btn-sm"><i class="fas fa-eye"></i> View Post</a>
 
                     <?php $is_own_post = ($r['pet_owner_id'] == $_SESSION['user_id']); ?>
 
@@ -217,7 +217,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                     <?php else: ?>
                       <form class="report-ajax-form" style="display:inline" data-action="remove" data-report-id="<?= $r['id'] ?>" data-pet-id="<?= $r['pet_id'] ?>">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                        <button class="btn btn-red btn-sm remove-btn" type="submit" data-name="<?= htmlspecialchars($r['pet_name']) ?>">🗑️ Remove Post</button>
+                        <button class="btn btn-red btn-sm remove-btn" type="submit" data-name="<?= htmlspecialchars($r['pet_name']) ?>"><i class="fas fa-trash"></i> Remove Post</button>
                       </form>
                       <form class="report-ajax-form" style="display:inline" data-action="dismiss" data-report-id="<?= $r['id'] ?>" data-pet-id="<?= $r['pet_id'] ?>">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -334,7 +334,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                       </td>
                       <td style="padding:10px 12px;color:var(--gray-4)"><?= date('M j, Y', strtotime($pet['created_at'])) ?></td>
                       <td style="padding:10px 12px">
-                        <a href="../../views/pets/show.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-gray btn-sm">👁️ View</a>
+                        <a href="../../views/pets/show.php?id=<?= encode_id($pet['id']) ?>" class="btn btn-gray btn-sm"><i class="fas fa-eye"></i> View</a>
                         <?php if ($pet['status'] === 'removed' && is_admin()): ?>
                           <form method="POST" action="../../controllers/admin/undo.php" style="display:inline">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -346,7 +346,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="type" value="hard_delete">
                             <input type="hidden" name="pet_id" value="<?= $pet['id'] ?>">
-                            <button class="btn btn-red btn-sm hard-del-btn" data-name="<?= htmlspecialchars($pet['name']) ?>">❌ Delete Permanently</button>
+                            <button class="btn btn-red btn-sm hard-del-btn" data-name="<?= htmlspecialchars($pet['name']) ?>"><i class="fas fa-times"></i> Delete Permanently</button>
                           </form>
                         <?php endif; ?>
                       </td>
@@ -385,7 +385,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                           <?php if ($target_pet): ?>
                             <div style="font-weight:700"><?= htmlspecialchars($target_pet['name']) ?></div>
                             <div style="color:var(--gray-4);font-size:11px;margin-bottom:4px"><?= ModLog::targetLabel($log['target_type']) ?></div>
-                            <a href="../../views/pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-gray btn-sm" style="font-size:11px">👁️ View Post</a>
+                            <a href="../../views/pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-gray btn-sm" style="font-size:11px"><i class="fas fa-eye"></i> View Post</a>
                           <?php else: ?>
                             <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
                           <?php endif; ?>
@@ -474,7 +474,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                           <?php if ($target_pet): ?>
                             <div style="font-weight:700"><?= htmlspecialchars($target_pet['name']) ?></div>
                             <div style="color:var(--gray-4);font-size:11px;margin-bottom:4px"><?= ModLog::targetLabel($log['target_type']) ?></div>
-                            <a href="../../views/pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-gray btn-sm" style="font-size:11px">👁️ View Post</a>
+                            <a href="../../views/pets/show.php?id=<?= encode_id($log['target_id']) ?>" class="btn btn-gray btn-sm" style="font-size:11px"><i class="fas fa-eye"></i> View Post</a>
                           <?php else: ?>
                             <span style="color:var(--gray-4)">[Deleted] <?= ModLog::targetLabel($log['target_type']) ?> #<?= $log['target_id'] ?></span>
                           <?php endif; ?>
@@ -703,7 +703,7 @@ $all_users = ($tab === 'users' && is_admin()) ? $userObj->search($_GET['q'] ?? '
                               <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                               <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                               <input type="hidden" name="action" value="unban">
-                              <button class="btn btn-green btn-sm" style="font-size:11px">✓ Unban</button>
+                              <button class="btn btn-green btn-sm" style="font-size:11px"><i class="fas fa-check"></i> Unban</button>
                             </form>
                           <?php else: ?>
                             <form method="POST" action="/controllers/admin/ban.php" style="display:inline">

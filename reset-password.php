@@ -66,7 +66,7 @@ require_once 'views/layout/layout.php';
     <?php endif; ?>
 
     <?php if ($success): ?>
-      <div class="alert alert-success">✓ Your password has been reset successfully. You can now log in with your new password.</div>
+      <div class="alert alert-success"><i class="fas fa-check"></i> Your password has been reset successfully. You can now log in with your new password.</div>
       <div style="margin-top:16px">
         <a href="login.php" class="btn btn-primary w-full text-center">Go to Login</a>
       </div>

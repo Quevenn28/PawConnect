@@ -1,7 +1,7 @@
 <?php
-require_once '../../autoload.php';
-require_once '../../config/database.php';
-require_once '../layout/layout.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../layout/layout.php';
 require_moderator();
 
 $reportObj = new Report($pdo);
@@ -25,8 +25,7 @@ $sort_labels = [
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Reports — PawConnect</title>
-  <link rel="stylesheet" href="../../assets/css/style.css">
+  <title>Reports — PawConnect</title>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -160,7 +159,7 @@ $sort_labels = [
               };
               $badge_icon = match($r['status']) {
                 'pending'   => '⏳',
-                'removed'   => '🗑️',
+                'removed'   => '<i class="fas fa-trash"></i>',
                 'dismissed' => '✅',
                 default     => '',
               };
@@ -195,14 +194,14 @@ $sort_labels = [
                   <form method="POST" action="../../controllers/admin/reports.php?sort=<?= urlencode($sort) ?>"
                         class="report-action-form"
                         data-confirm="Remove this pet listing? It will be hidden from the public."
-                        data-confirm-btn="🗑️ Yes, Remove"
+                        data-confirm-btn="<i class='fas fa-trash'></i> Yes, Remove"
                         data-confirm-color="#dc2626">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="action"    value="remove">
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="pet_id"    value="<?= $r['pet_id'] ?>">
                     <input type="hidden" name="sort"      value="<?= htmlspecialchars($sort) ?>">
-                    <button class="btn btn-red btn-sm">🗑️ Remove Post</button>
+                    <button class="btn btn-red btn-sm"><i class="fas fa-trash"></i> Remove Post</button>
                   </form>
                   <!-- Dismiss -->
                   <form method="POST" action="../../controllers/admin/reports.php"

@@ -23,10 +23,11 @@ CREATE TABLE IF NOT EXISTS users (
   username      VARCHAR(60)   NOT NULL UNIQUE,
   email         VARCHAR(150)  NOT NULL UNIQUE,
   password      VARCHAR(255)  NOT NULL,
-  phone         VARCHAR(30),
+  phone         VARCHAR(11),
   facebook      VARCHAR(200),
   address       VARCHAR(200),
   birthdate     DATE          NOT NULL,
+  sex           ENUM('Male','Female','Prefer not to say') DEFAULT 'Prefer not to say',
   profile_photo VARCHAR(200),
   role          ENUM('user','moderator','admin') DEFAULT 'user',
   points        INT           DEFAULT 5,
@@ -54,10 +55,11 @@ CREATE TABLE IF NOT EXISTS pets (
   good_with_children  ENUM('Yes','No','Unknown') DEFAULT 'Unknown',
   photo               VARCHAR(200),
   status              ENUM('available','pending','adopted','removed') DEFAULT 'available',
-  removed_by  ENUM('user','moderator','admin') NULL,
+  removed_by  INT NULL,
   removed_at  DATETIME     NULL,
   created_at  DATETIME     DEFAULT NOW(),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (removed_by) REFERENCES users(id)
 ) DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- ============================================================

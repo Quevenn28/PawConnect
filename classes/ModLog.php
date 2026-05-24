@@ -122,12 +122,12 @@ class ModLog {
      */
     public static function actionLabel(string $action): string {
         return match($action) {
-            self::ACTION_REMOVED_POST  => '🗑️ Removed Post',
-            self::ACTION_DISMISSED     => '✅ Dismissed Report',
-            self::ACTION_BANNED_USER   => '🚫 Banned User',
-            self::ACTION_UNBANNED_USER => '✅ Unbanned User',
-            self::ACTION_RESTORED_POST => '♻️ Restored Post',
-            self::ACTION_DELETED_POST  => '❌ Permanently Deleted Post',
+            self::ACTION_REMOVED_POST  => 'Removed Post',
+            self::ACTION_DISMISSED     => 'Dismissed Report',
+            self::ACTION_BANNED_USER   => 'Banned User',
+            self::ACTION_UNBANNED_USER => 'Unbanned User',
+            self::ACTION_RESTORED_POST => 'Restored Post',
+            self::ACTION_DELETED_POST  => 'Permanently Deleted Post',
             default                    => ucfirst(str_replace('_', ' ', $action)),
         };
     }

@@ -1,7 +1,7 @@
 <?php
 // controllers/admin/assign_role.php — change a user's role (admin only)
-require_once '../../autoload.php';
-require_once '../../config/database.php';
+require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../config/database.php';
 require_admin();
 verify_csrf();
 

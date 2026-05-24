@@ -75,8 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — PawConnect</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <title>Login — PawConnect</title>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <link rel="stylesheet" href="assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -121,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Password</label>
         <div class="password-wrap">
           <input type="password" name="password" id="passwordInput" placeholder="Your password" required>
-          <button type="button" class="toggle-pw" onclick="togglePassword()">👁️</button>
+          <button type="button" class="toggle-pw" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
         </div>
         <div style="text-align:right;margin-top:4px">
           <a href="forgot-password.php" style="font-size:12px;color:var(--blue);text-decoration:none">Forgot password?</a>

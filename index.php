@@ -15,6 +15,7 @@ $recent_pets = array_slice($recent_pets, 0, 6);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PawConnect — Find Your Forever Pet</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -39,10 +40,10 @@ $recent_pets = array_slice($recent_pets, 0, 6);
     <h2 class="section-title">How PawConnect Works</h2>
     <p class="section-sub">A few simple steps to find a pet its forever home.</p>
     <div class="how-grid">
-      <div class="how-card"><span class="how-icon">📝</span><div class="how-num">1</div><h3>Create Account</h3><p>Sign up and add your contact info so adopters can reach you directly.</p></div>
+      <div class="how-card"><span class="how-icon"><i class="fas fa-user-plus"></i></span><div class="how-num">1</div><h3>Create Account</h3><p>Sign up and add your contact info so adopters can reach you directly.</p></div>
       <div class="how-card"><span class="how-icon">🐾</span><div class="how-num">2</div><h3>List or Browse</h3><p>Post your pet with photos, or browse pets available for adoption.</p></div>
-      <div class="how-card"><span class="how-icon">💬</span><div class="how-num">3</div><h3>Connect</h3><p>Contact the owner directly via phone, email, or Facebook.</p></div>
-      <div class="how-card"><span class="how-icon">🏠</span><div class="how-num">4</div><h3>Adopt</h3><p>Complete the adoption and give a pet their forever home.</p></div>
+      <div class="how-card"><span class="how-icon"><i class="fas fa-comments"></i></span><div class="how-num">3</div><h3>Connect</h3><p>Contact the owner directly via phone, email, or Facebook.</p></div>
+      <div class="how-card"><span class="how-icon"><i class="fas fa-home"></i></span><div class="how-num">4</div><h3>Adopt</h3><p>Complete the adoption and give a pet their forever home.</p></div>
     </div>
   </div>
 </div>

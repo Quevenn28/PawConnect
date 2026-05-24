@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Account — PawConnect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -43,9 +44,11 @@
           <input
             type="text" name="full_name"
             placeholder="Juan dela Cruz"
+            maxlength="50"
             value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>"
             required
           >
+          <!-- <small class="text-muted">Max 50 characters</small> -->
         </div>
         <div class="form-group">
           <label>Username <span class="req">*</span></label>
@@ -55,7 +58,7 @@
             value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
             required
           >
-          <small class="text-muted">Letters, numbers, underscores only</small>
+          <!-- <small class="text-muted">Letters, numbers, underscores (3-60 chars)</small> -->
         </div>
       </div>
 
@@ -68,7 +71,15 @@
             value="<?= htmlspecialchars($_POST['birthdate'] ?? '') ?>"
             required
           >
-          <small class="text-muted">You must be 18 years or older to register.</small>
+          <!-- <small class="text-muted">Must be 18-116 years old</small> -->
+        </div>
+        <div class="form-group">
+          <label>Sex <span class="req">*</span></label>
+          <select name="sex" required>
+            <option value="Male" <?= ($_POST['sex'] ?? '') === 'Male' ? 'selected' : '' ?>>Male</option>
+            <option value="Female" <?= ($_POST['sex'] ?? '') === 'Female' ? 'selected' : '' ?>>Female</option>
+            <option value="Prefer not to say" <?= ($_POST['sex'] ?? '') === 'Prefer not to say' || !isset($_POST['sex']) ? 'selected' : '' ?>>Prefer not to say</option>
+          </select>
         </div>
       </div>
 
@@ -87,14 +98,14 @@
           <label>Password <span class="req">*</span></label>
           <div class="password-wrap">
             <input type="password" name="password" id="pw1" placeholder="Min. 6 characters" required>
-            <button type="button" class="toggle-pw" onclick="togglePw('pw1')">👁️</button>
+            <button type="button" class="toggle-pw" onclick="togglePw('pw1')"><i class="fas fa-eye"></i></button>
           </div>
         </div>
         <div class="form-group">
           <label>Confirm Password <span class="req">*</span></label>
           <div class="password-wrap">
             <input type="password" name="confirm" id="pw2" placeholder="Repeat password" required>
-            <button type="button" class="toggle-pw" onclick="togglePw('pw2')">👁️</button>
+            <button type="button" class="toggle-pw" onclick="togglePw('pw2')"><i class="fas fa-eye"></i></button>
           </div>
         </div>
       </div>
@@ -107,38 +118,43 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>📞 Phone / Mobile <span class="req">*</span></label>
+          <label><i class="fas fa-phone"></i> Phone / Mobile <span class="req">*</span></label>
           <input
-            type="tel" name="phone"
-            placeholder="+63 9XX XXX XXXX"
+            type="text" name="phone"
+            placeholder="09123456789"
+            maxlength="11"
             value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
             required
           >
+          <!-- <small class="text-muted">11 digits starting with 09 (numbers only)</small> -->
         </div>
         <div class="form-group">
-          <label>📘 Facebook Profile URL <span class="req">*</span></label>
+          <label><i class="fab fa-facebook"></i> Facebook Profile URL <span class="req">*</span></label>
           <input
             type="url" name="facebook"
             placeholder="https://facebook.com/yourname"
             value="<?= htmlspecialchars($_POST['facebook'] ?? '') ?>"
             required
           >
+          <!-- <small class="text-muted">Must start with https://facebook.com/</small> -->
         </div>
       </div>
 
       <div class="form-group">
-        <label>📍 Address / Location <span class="req">*</span></label>
+        <label><i class="fas fa-map-marker-alt"></i> Address / Location <span class="req">*</span></label>
         <input
           type="text" name="address"
           placeholder="City, Province"
+          maxlength="100"
           value="<?= htmlspecialchars($_POST['address'] ?? '') ?>"
           required
         >
+        <!-- <small class="text-muted">Max 100 characters. Format: Barangay, City, Province</small> -->
       </div>
 
       <!-- Points Notice -->
       <div class="points-notice">
-        🎁 You'll receive <strong><?= PTS_REGISTER ?> welcome points</strong> for creating your account!
+        <i class="fas fa-gift"></i> You'll receive <strong><?= PTS_REGISTER ?> welcome points</strong> for creating your account!
       </div>
 
       <div class="form-group" style="margin-top:12px">

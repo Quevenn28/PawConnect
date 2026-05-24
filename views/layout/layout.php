@@ -52,14 +52,32 @@ function render_flash() {
     if (!$messages) {
         return;
     }
-    echo '<div class="flash-notice-wrap">';
+    // Separate auto-dismiss (success) from regular (error/info) alerts
+    $auto_dismiss = [];
+    $regular = [];
     foreach ($messages as $msg) {
-        $type = $msg['type'] === 'error' ? 'alert-error' : ($msg['type'] === 'success' ? 'alert-success' : 'alert-info');
-        // Add auto-dismiss class to success alerts for consistency
-        $extra_class = $msg['type'] === 'success' ? ' auto-dismiss' : '';
-        echo '<div class="alert ' . $type . $extra_class . '">' . htmlspecialchars($msg['message']) . '</div>';
+        if ($msg['type'] === 'success') {
+            $auto_dismiss[] = $msg;
+        } else {
+            $regular[] = $msg;
+        }
     }
-    echo '</div>';
+    
+    // Render auto-dismiss alerts (fixed overlay, don't affect layout)
+    foreach ($auto_dismiss as $msg) {
+        $type = 'alert-success';
+        echo '<div class="alert ' . $type . ' auto-dismiss">' . htmlspecialchars($msg['message']) . '</div>';
+    }
+    
+    // Render regular alerts (in flow, with wrapper)
+    if ($regular) {
+        echo '<div class="flash-notice-wrap">';
+        foreach ($regular as $msg) {
+            $type = $msg['type'] === 'error' ? 'alert-error' : 'alert-info';
+            echo '<div class="alert ' . $type . '">' . htmlspecialchars($msg['message']) . '</div>';
+        }
+        echo '</div>';
+    }
 }
 
 function footer_bar() { ?>

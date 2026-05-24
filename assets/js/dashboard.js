@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const petName = form.dataset.name;
             Swal.fire({
                 title: 'Remove listing?',
-                text: `Remove ${petName}? It will be hidden from the public but kept in our records.`,
+                text: `Remove ${petName}? This can't be undone.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, remove it',
